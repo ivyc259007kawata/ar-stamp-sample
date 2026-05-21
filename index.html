@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スタンプラリー</title>
-
+  <title>ARスタンプラリー</title>
   <style>
     body {
       font-family: sans-serif;
       background: #f5f5f5;
       padding: 20px;
     }
-
     .card {
       background: white;
       border-radius: 12px;
@@ -19,7 +17,6 @@
       max-width: 500px;
       margin: auto;
     }
-
     .spot {
       display: flex;
       justify-content: space-between;
@@ -27,65 +24,48 @@
       padding: 14px 0;
       border-bottom: 1px solid #ddd;
     }
-
     .btn {
       background: #333;
       color: white;
       padding: 8px 12px;
       border-radius: 8px;
       text-decoration: none;
+      white-space: nowrap;
     }
-
     .clear {
       color: green;
       font-weight: bold;
+      margin-left: 6px;
     }
   </style>
 </head>
 <body>
-
 <div class="card">
   <h1>ARスタンプラリー</h1>
-
-  <div class="spot">
-    <div>
-      🏯 神社
-      <span id="jinja-status"></span>
-    </div>
-
-    <a class="btn" href="ar.html?spot=jinja">
-      ARを読む
-    </a>
-  </div>
-
-  <div class="spot">
-    <div>
-      🌸 公園
-      <span id="park-status"></span>
-    </div>
-
-    <a class="btn" href="ar.html?spot=park">
-      ARを読む
-    </a>
-  </div>
 </div>
 
 <script>
+  // ★スポットを追加するときはここだけ編集
+  const SPOTS = [
+    { id: 'jinja', label: '🏯 神社' },
+    { id: 'park',  label: '🌸 公園' },
+  ];
 
-function updateStatus(id) {
+  const card = document.querySelector('.card');
 
-  const el = document.getElementById(id + '-status');
-
-  if(localStorage.getItem(id)) {
-    el.textContent = '✔';
-    el.classList.add('clear');
-  }
-}
-
-updateStatus('jinja');
-updateStatus('park');
-
+  SPOTS.forEach(({ id, label }) => {
+    const cleared = localStorage.getItem(id);
+    const div = document.createElement('div');
+    div.className = 'spot';
+    div.innerHTML = `
+      <div>
+        ${label}
+        <span class="${cleared ? 'clear' : ''}">${cleared ? '✔' : ''}</span>
+      </div>
+      <a class="btn" href="ar.html?spot=${id}">ARを読む</a>
+    `;
+    card.appendChild(div);
+  });
 </script>
-
 </body>
 </html>
