@@ -42,34 +42,32 @@
 
 <div class="ui">
   <h2>AR読み取り</h2>
-
   <p id="message">マーカーを読み取ってください</p>
-
   <a class="back" href="index.html">スタンプ帳へ戻る</a>
 </div>
 
 <a-scene
   embedded
-  renderer="logarithmicDepthBuffer: true; antialias: true; colorManagement: true;"
   vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: true"
+  renderer="antialias: false; precision: low; colorManagement: true;"
   arjs="
-    trackingMethod: best;
     sourceType: webcam;
     facingMode: environment;
+    trackingMethod: best;
+    debugUIEnabled: false;
   "
 >
 
-  <!-- カメラ（重要：距離補正） -->
-  <a-entity camera position="0 0 0"></a-entity>
+  <!-- カメラ（ズーム改善ポイント） -->
+  <a-entity camera="fov: 80" position="0 0 0"></a-entity>
 
   <!-- マーカー -->
   <a-marker id="marker" preset="hiro">
 
-    <!-- 少し小さめにして“近さ感”を軽減 -->
+    <!-- 軽量化＆表示安定 -->
     <a-box
-      position="0 0.3 0"
-      scale="0.5 0.5 0.5"
+      position="0 0.2 0"
+      scale="0.4 0.4 0.4"
       color="red">
     </a-box>
 

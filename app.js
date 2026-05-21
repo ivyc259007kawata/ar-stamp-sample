@@ -1,22 +1,20 @@
 const marker = document.querySelector('#marker');
-
 const params = new URLSearchParams(location.search);
-
 const spot = params.get('spot');
-
 const message = document.getElementById('message');
 
-marker.addEventListener('markerFound', () => {
+if (marker && spot) {
 
-  // すでに取得済みなら終了
-  if(localStorage.getItem(spot)) {
-    return;
-  }
+  marker.addEventListener('markerFound', () => {
 
-  // localStorageへ保存
-  localStorage.setItem(spot, 'clear');
+    if (localStorage.getItem(spot)) {
+      message.textContent = '✔ 取得済み';
+      return;
+    }
 
-  // メッセージ変更
-  message.textContent = '✔ スタンプ獲得！';
+    localStorage.setItem(spot, 'clear');
+    message.textContent = '✔ スタンプ獲得！';
 
-});
+  });
+
+}
