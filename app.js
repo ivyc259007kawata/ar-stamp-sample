@@ -9,9 +9,10 @@ window.addEventListener('load', () => {
   }
 
   // ★PC/スマホでfovを切り替えてズームを補正
+  // 固定解像度を解除したため、スマホの数値を50から65（やや広角）に微調整しています
   const cameraEl = document.getElementById('camera');
   const isMobile = /iPhone|Android/i.test(navigator.userAgent);
-  const fov = isMobile ? 50 : 80;
+  const fov = isMobile ? 65 : 80;
   if (cameraEl) {
     cameraEl.setAttribute('camera', 'fov', fov);
   }

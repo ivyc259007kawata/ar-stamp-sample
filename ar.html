@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
   <title>AR読み取り</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <!-- ★CDNをjsDelivrの安定版に変更 -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
   <style>
     body {
@@ -47,29 +46,23 @@
 <a-scene
   embedded
   vr-mode-ui="enabled: false"
-  renderer="antialias: false; precision: low;"
+  renderer="antialias: true; precision: medium;"
   arjs="
     sourceType: webcam;
     facingMode: environment;
-    trackingMethod: best;
     debugUIEnabled: false;
-    sourceWidth: 640;
-    sourceHeight: 480;
-    displayWidth: 640;
-    displayHeight: 480;
   "
 >
-  <!-- ★fovはapp.jsでPC/スマホ判定して動的に設定するためここでは指定しない -->
   <a-entity id="camera" camera position="0 0 0"></a-entity>
 
-  <!-- マーカー -->
   <a-marker id="marker" preset="hiro">
     <a-box
       position="0 0.2 0"
       scale="0.35 0.35 0.35"
       color="red">
     </a-box>
-  </a-marker>
+
+    </a-marker>
 </a-scene>
 
 <script src="app.js"></script>
