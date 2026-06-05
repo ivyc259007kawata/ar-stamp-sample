@@ -7,9 +7,9 @@ window.addEventListener('load', () => {
         params.get('spot');
 
     const markerFiles = {
-        jinja: "img/jinja.patt",
-        park: "img/park.patt",
-        libra: "img/libra.patt"
+        jinja: "img/jinja.patt", //鳥居のピンクマーカー
+        park: "img/park.patt",  //アルパカの青マーカー
+        libra: "img/libra.patt" //ロボットの緑マーカー
     };
 
     const spotNames = {

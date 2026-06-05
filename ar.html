@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
+    <meta name="viewport"
+        content="width=device-width,
         initial-scale=1.0,
         maximum-scale=1.0,
         minimum-scale=1.0,
@@ -21,48 +22,31 @@
             font-family: sans-serif;
         }
 
-        /* 中央の読み取りガイド */
         .target {
             position: fixed;
-
             top: 50%;
             left: 50%;
-
             transform: translate(-50%, -50%);
-
             width: 180px;
             height: 180px;
-
             border: 4px dashed #ff9800;
             border-radius: 12px;
-
             z-index: 998;
-
             pointer-events: none;
         }
 
-        /* 下部パネル */
         .ui {
             position: fixed;
-
             bottom: 20px;
             left: 50%;
-
             transform: translateX(-50%);
-
             width: 90%;
             max-width: 400px;
-
-            background: rgba(255, 255, 255, 0.95);
-
+            background: rgba(255,255,255,0.95);
             padding: 20px;
-
             border-radius: 16px;
-
             text-align: center;
-
             box-sizing: border-box;
-
             z-index: 999;
         }
 
@@ -79,26 +63,19 @@
 
         .back {
             display: block;
-
             background: #2e7d32;
             color: white;
-
             text-decoration: none;
-
             padding: 12px;
-
             border-radius: 8px;
         }
     </style>
-
 </head>
 
 <body>
 
-    <!-- 読み取りガイド -->
     <div class="target"></div>
 
-    <!-- 下部UI -->
     <div class="ui">
 
         <h2 id="spotName">スポット</h2>
@@ -115,18 +92,32 @@
 
     </div>
 
-    <a-scene embedded vr-mode-ui="enabled: false" renderer="antialias: true; precision: medium;" arjs="
-        sourceType: webcam;
-        facingMode: environment;
-        debugUIEnabled: false;
-    ">
+    <a-scene
+        embedded
+        vr-mode-ui="enabled: false"
+        renderer="antialias: true; precision: medium;"
+        arjs="
+            sourceType: webcam;
+            facingMode: environment;
+            debugUIEnabled: false;
+        ">
 
-        <a-entity id="camera" camera position="0 0 0">
+        <a-entity
+            id="camera"
+            camera
+            position="0 0 0">
         </a-entity>
 
-        <a-marker id="marker" type="pattern" url="">
+        <!-- app.js がここを書き換える -->
+        <a-marker
+            id="marker"
+            type="pattern"
+            url="">
 
-            <a-box position="0 0.2 0" scale="0.35 0.35 0.35" color="red">
+            <a-box
+                position="0 0.2 0"
+                scale="0.35 0.35 0.35"
+                color="red">
             </a-box>
 
         </a-marker>
