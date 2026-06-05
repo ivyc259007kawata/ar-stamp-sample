@@ -6,6 +6,12 @@ window.addEventListener('load', () => {
     const spot =
         params.get('spot');
 
+    const markerFiles = {
+        jinja: "img/jinja.patt",
+        park: "img/park.patt",
+        libra: "img/libra.patt"
+    };
+
     const spotNames = {
         jinja: "🏯 神社",
         park: "🌸 公園",
@@ -15,26 +21,52 @@ window.addEventListener('load', () => {
     const spotName =
         document.getElementById("spotName");
 
+    const message =
+        document.getElementById("message");
+
+    const target =
+        document.querySelector(".target");
+
+    const marker =
+        document.querySelector("#marker");
+
+    const debug =
+        document.getElementById("debug");
+
+    // スポット名表示
     if (spotName) {
         spotName.textContent =
             spotNames[spot] || "スポット";
     }
 
-    const message =
-        document.getElementById('message');
-
-    const target =
-        document.querySelector('.target');
-
+    // URLパラメータチェック
     if (!spot) {
         message.textContent =
-            'スポット情報がありません';
+            "スポット情報がありません";
         return;
+    }
+
+    // マーカー設定
+    if (marker && markerFiles[spot]) {
+
+        marker.setAttribute(
+            "url",
+            markerFiles[spot]
+        );
+
+    }
+
+    // デバッグ表示
+    if (debug) {
+
+        debug.textContent =
+            markerFiles[spot];
+
     }
 
     // カメラ設定
     const cameraEl =
-        document.getElementById('camera');
+        document.getElementById("camera");
 
     const isMobile =
         /iPhone|Android/i.test(
@@ -45,92 +77,101 @@ window.addEventListener('load', () => {
         isMobile ? 65 : 80;
 
     if (cameraEl) {
+
         cameraEl.setAttribute(
-            'camera',
-            'fov',
+            "camera",
+            "fov",
             fov
         );
+
     }
 
     const scene =
-        document.querySelector('a-scene');
+        document.querySelector("a-scene");
 
     const attachMarkerListener = () => {
 
         const marker =
-            document.querySelector('#marker');
+            document.querySelector("#marker");
 
         if (!marker) return;
 
-        // マーカー発見
+        // マーカー検出
         marker.addEventListener(
-            'markerFound',
+            "markerFound",
             () => {
 
                 target.style.borderColor =
-                    '#4caf50';
+                    "#4caf50";
 
                 target.style.background =
-                    'rgba(76,175,80,0.2)';
+                    "rgba(76,175,80,0.2)";
 
                 if (
                     localStorage.getItem(spot)
                 ) {
 
                     message.textContent =
-                        '✔ 取得済み';
+                        "✔ 取得済み";
 
                     return;
                 }
 
                 localStorage.setItem(
                     spot,
-                    'clear'
+                    "clear"
                 );
 
                 message.textContent =
-                    '🎉 スタンプ獲得！';
+                    "🎉 スタンプ獲得！";
 
                 message.style.color =
-                    '#2e7d32';
+                    "#2e7d32";
 
                 message.style.fontWeight =
-                    'bold';
+                    "bold";
             }
         );
 
-        // マーカー見失い
+        // マーカーを見失った
         marker.addEventListener(
-            'markerLost',
+            "markerLost",
             () => {
 
                 target.style.borderColor =
-                    '#ff9800';
+                    "#ff9800";
 
                 target.style.background =
-                    'transparent';
+                    "transparent";
 
                 if (
                     !localStorage.getItem(spot)
                 ) {
 
                     message.textContent =
-                        'マーカーを中央に合わせてください';
+                        "マーカーを中央に合わせてください";
 
                     message.style.color =
-                        '#000';
+                        "#000";
+
+                    message.style.fontWeight =
+                        "normal";
                 }
             }
         );
     };
 
     if (scene.hasLoaded) {
+
         attachMarkerListener();
+
     } else {
+
         scene.addEventListener(
-            'loaded',
+            "loaded",
             attachMarkerListener
         );
+
     }
 
 });

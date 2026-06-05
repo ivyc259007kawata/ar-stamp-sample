@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width,
+    <meta name="viewport" content="width=device-width,
         initial-scale=1.0,
         maximum-scale=1.0,
         minimum-scale=1.0,
@@ -104,6 +103,8 @@
 
         <h2 id="spotName">スポット</h2>
 
+        <p id="debug"></p>
+
         <div id="message">
             マーカーを中央に合わせてください
         </div>
@@ -114,30 +115,18 @@
 
     </div>
 
-    <a-scene
-        embedded
-        vr-mode-ui="enabled: false"
-        renderer="antialias: true; precision: medium;"
-        arjs="
+    <a-scene embedded vr-mode-ui="enabled: false" renderer="antialias: true; precision: medium;" arjs="
         sourceType: webcam;
         facingMode: environment;
         debugUIEnabled: false;
     ">
 
-        <a-entity
-            id="camera"
-            camera
-            position="0 0 0">
+        <a-entity id="camera" camera position="0 0 0">
         </a-entity>
 
-        <a-marker
-            id="marker"
-            preset="hiro">
+        <a-marker id="marker" type="pattern" url="">
 
-            <a-box
-                position="0 0.2 0"
-                scale="0.35 0.35 0.35"
-                color="red">
+            <a-box position="0 0.2 0" scale="0.35 0.35 0.35" color="red">
             </a-box>
 
         </a-marker>
