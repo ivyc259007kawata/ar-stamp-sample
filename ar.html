@@ -1,70 +1,151 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-  <title>AR読み取り</title>
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: sans-serif;
-    }
-    .ui {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 999;
-      background: rgba(255,255,255,0.9);
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
-    .back {
-      display: inline-block;
-      margin-top: 8px;
-      background: #333;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-decoration: none;
-      width: 100%;
-      text-align: center;
-      box-sizing: border-box;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width,
+        initial-scale=1.0,
+        maximum-scale=1.0,
+        minimum-scale=1.0,
+        user-scalable=no">
+
+    <title>AR読み取り</title>
+
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        /* 中央の読み取りガイド */
+        .target {
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            width: 180px;
+            height: 180px;
+
+            border: 4px dashed #ff9800;
+            border-radius: 12px;
+
+            z-index: 998;
+
+            pointer-events: none;
+        }
+
+        /* 下部パネル */
+        .ui {
+            position: fixed;
+
+            bottom: 20px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 90%;
+            max-width: 400px;
+
+            background: rgba(255, 255, 255, 0.95);
+
+            padding: 20px;
+
+            border-radius: 16px;
+
+            text-align: center;
+
+            box-sizing: border-box;
+
+            z-index: 999;
+        }
+
+        #spotName {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        #message {
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .back {
+            display: block;
+
+            background: #2e7d32;
+            color: white;
+
+            text-decoration: none;
+
+            padding: 12px;
+
+            border-radius: 8px;
+        }
+    </style>
+
 </head>
+
 <body>
-<div class="ui">
-  <div>AR読み取り</div>
-  <div id="message">マーカーを読み取ってください</div>
-  <a class="back" href="index.html">戻る</a>
-</div>
 
-<a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  renderer="antialias: true; precision: medium;"
-  arjs="
-    sourceType: webcam;
-    facingMode: environment;
-    debugUIEnabled: false;
-  "
->
-  <a-entity id="camera" camera position="0 0 0"></a-entity>
+    <!-- 読み取りガイド -->
+    <div class="target"></div>
 
-  <a-marker id="marker" preset="hiro">
-    <a-box
-      position="0 0.2 0"
-      scale="0.35 0.35 0.35"
-      color="red">
-    </a-box>
+    <!-- 下部UI -->
+    <div class="ui">
 
-    </a-marker>
-</a-scene>
+        <h2 id="spotName">スポット</h2>
 
-<script src="app.js"></script>
+        <div id="message">
+            マーカーを中央に合わせてください
+        </div>
+
+        <a class="back" href="index.html">
+            ホームへ戻る
+        </a>
+
+    </div>
+
+    <a-scene
+        embedded
+        vr-mode-ui="enabled: false"
+        renderer="antialias: true; precision: medium;"
+        arjs="
+        sourceType: webcam;
+        facingMode: environment;
+        debugUIEnabled: false;
+    ">
+
+        <a-entity
+            id="camera"
+            camera
+            position="0 0 0">
+        </a-entity>
+
+        <a-marker
+            id="marker"
+            preset="hiro">
+
+            <a-box
+                position="0 0.2 0"
+                scale="0.35 0.35 0.35"
+                color="red">
+            </a-box>
+
+        </a-marker>
+
+    </a-scene>
+
+    <script src="app.js"></script>
+
 </body>
+
 </html>
