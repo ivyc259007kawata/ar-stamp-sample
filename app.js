@@ -1,15 +1,13 @@
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
 
-    const params =
-        new URLSearchParams(location.search);
 
-    const spot =
-        params.get('spot');
+    const params = new URLSearchParams(location.search);
+    const spot = params.get("spot");
 
     const markerFiles = {
-        jinja: "img/jinja.patt", //鳥居のピンクマーカー
-        park: "img/park.patt",  //アルパカの青マーカー
-        libra: "img/libra.patt" //ロボットの緑マーカー
+        jinja: "img/jinja.patt",
+        park: "img/park.patt",
+        libra: "img/libra.patt"
     };
 
     const spotNames = {
@@ -18,160 +16,82 @@ window.addEventListener('load', () => {
         libra: "📚 図書館"
     };
 
-    const spotName =
-        document.getElementById("spotName");
+    const spotNameEl = document.getElementById("spotName");
+    const message = document.getElementById("message");
+    const target = document.querySelector(".target");
+    const debugEl = document.getElementById("debug");
 
-    const message =
-        document.getElementById("message");
-
-    const target =
-        document.querySelector(".target");
-
-    const marker =
-        document.querySelector("#marker");
-
-    const debug =
-        document.getElementById("debug");
-
-    // スポット名表示
-    if (spotName) {
-        spotName.textContent =
-            spotNames[spot] || "スポット";
-    }
-
-    // URLパラメータチェック
-    if (!spot) {
-        message.textContent =
-            "スポット情報がありません";
+    if (!spot || !markerFiles[spot]) {
+        if (message) {
+            message.textContent = "スポット情報がありません";
+        }
         return;
     }
 
-    // マーカー設定
-    if (marker && markerFiles[spot]) {
-
-        marker.setAttribute(
-            "url",
-            markerFiles[spot]
-        );
-
+    if (spotNameEl) {
+        spotNameEl.textContent = spotNames[spot];
     }
 
-    // デバッグ表示
-    if (debug) {
-
-        debug.textContent =
-            markerFiles[spot];
-
+    if (debugEl) {
+        debugEl.textContent = markerFiles[spot];
     }
 
-    // カメラ設定
-    const cameraEl =
-        document.getElementById("camera");
+    const scene = document.querySelector("a-scene");
 
-    const isMobile =
-        /iPhone|Android/i.test(
-            navigator.userAgent
-        );
+    const init = () => {
 
-    const fov =
-        isMobile ? 65 : 80;
+        const markerEl = document.getElementById("marker");
 
-    if (cameraEl) {
+        if (!markerEl) {
+            console.error("marker が見つかりません");
+            return;
+        }
 
-        cameraEl.setAttribute(
-            "camera",
-            "fov",
-            fov
-        );
+        markerEl.setAttribute("url", markerFiles[spot]);
 
-    }
+        markerEl.addEventListener("markerFound", () => {
 
-    const scene =
-        document.querySelector("a-scene");
-
-    const attachMarkerListener = () => {
-
-        const marker =
-            document.querySelector("#marker");
-
-        if (!marker) return;
-
-        // マーカー検出
-        marker.addEventListener(
-            "markerFound",
-            () => {
-
-                target.style.borderColor =
-                    "#4caf50";
-
-                target.style.background =
-                    "rgba(76,175,80,0.2)";
-
-                if (
-                    localStorage.getItem(spot)
-                ) {
-
-                    message.textContent =
-                        "✔ 取得済み";
-
-                    return;
-                }
-
-                localStorage.setItem(
-                    spot,
-                    "clear"
-                );
-
-                message.textContent =
-                    "🎉 スタンプ獲得！";
-
-                message.style.color =
-                    "#2e7d32";
-
-                message.style.fontWeight =
-                    "bold";
+            if (target) {
+                target.style.borderColor = "#4caf50";
+                target.style.background = "rgba(76,175,80,0.2)";
             }
-        );
 
-        // マーカーを見失った
-        marker.addEventListener(
-            "markerLost",
-            () => {
-
-                target.style.borderColor =
-                    "#ff9800";
-
-                target.style.background =
-                    "transparent";
-
-                if (
-                    !localStorage.getItem(spot)
-                ) {
-
-                    message.textContent =
-                        "マーカーを中央に合わせてください";
-
-                    message.style.color =
-                        "#000";
-
-                    message.style.fontWeight =
-                        "normal";
+            if (localStorage.getItem(spot)) {
+                if (message) {
+                    message.textContent = "✔ 取得済み";
                 }
+                return;
             }
-        );
+
+            localStorage.setItem(spot, "clear");
+
+            if (message) {
+                message.textContent = "🎉 スタンプ獲得！";
+                message.style.color = "#2e7d32";
+                message.style.fontWeight = "bold";
+            }
+        });
+
+        markerEl.addEventListener("markerLost", () => {
+
+            if (target) {
+                target.style.borderColor = "#ff9800";
+                target.style.background = "transparent";
+            }
+
+            if (!localStorage.getItem(spot) && message) {
+                message.textContent = "マーカーを中央に合わせてください";
+                message.style.color = "#000";
+                message.style.fontWeight = "normal";
+            }
+        });
     };
 
     if (scene.hasLoaded) {
-
-        attachMarkerListener();
-
+        init();
     } else {
-
-        scene.addEventListener(
-            "loaded",
-            attachMarkerListener
-        );
-
+        scene.addEventListener("loaded", init);
     }
+
 
 });
