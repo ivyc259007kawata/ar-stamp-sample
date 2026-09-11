@@ -4,23 +4,19 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-        content="width=device-width,
+    <meta name="viewport" content="width=device-width,
         initial-scale=1.0,
         maximum-scale=1.0,
         minimum-scale=1.0,
         user-scalable=no">
 
-    <title>AR読み取り</title>
+    <title>にんじん収穫</title>
 
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
-
-    <!-- GLBアニメーション再生 -->
-    <script src="https://unpkg.com/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
 
     <style>
         body {
@@ -29,65 +25,323 @@
             font-family: sans-serif;
         }
 
+        /* =========================
+           マーカーを合わせる枠
+        ========================= */
+
         .target {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+
             width: 180px;
             height: 180px;
+
             border: 4px dashed #ff9800;
             border-radius: 12px;
+
             z-index: 998;
+
             pointer-events: none;
         }
 
+
+        /* =========================
+           下部メッセージ
+        ========================= */
+
         .ui {
             position: fixed;
+
             bottom: 20px;
             left: 50%;
+
             transform: translateX(-50%);
+
             width: 90%;
             max-width: 400px;
+
             background: rgba(255, 255, 255, 0.95);
+
             padding: 20px;
+
             border-radius: 16px;
+
             text-align: center;
+
             box-sizing: border-box;
+
             z-index: 999;
         }
 
+
         #spotName {
             margin: 0 0 10px;
+
             font-size: 28px;
         }
 
+
         #message {
             margin-bottom: 15px;
+
             font-size: 18px;
+
             font-weight: bold;
         }
 
+
+        /* =========================
+           収穫数
+        ========================= */
+
+        #count {
+            font-size: 20px;
+
+            margin-bottom: 10px;
+        }
+
+
+        /* =========================
+           ホームへ戻る
+        ========================= */
+
         .back {
             display: block;
+
             background: #2e7d32;
+
             color: white;
+
             text-decoration: none;
+
             padding: 12px;
+
             border-radius: 8px;
+        }
+
+
+        /* =========================
+           ゲーム画面
+        ========================= */
+
+        #game {
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 997;
+
+            pointer-events: none;
+        }
+
+
+        /* =========================
+           畑
+        ========================= */
+
+        .field {
+            position: absolute;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            width: 90%;
+            max-width: 400px;
+
+            height: 300px;
+
+            background: #8d6e63;
+
+            border-radius: 30px;
+
+            box-shadow:
+                inset 0 0 0 8px rgba(0, 0, 0, 0.08);
+        }
+
+
+        /* =========================
+           穴
+        ========================= */
+
+        .hole {
+            position: absolute;
+
+            width: 90px;
+            height: 40px;
+
+            background: #4e342e;
+
+            border-radius: 50%;
+
+            box-shadow:
+                inset 0 5px 8px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .hole1 {
+            top: 70px;
+            left: 35px;
+        }
+
+
+        .hole2 {
+            top: 70px;
+            right: 35px;
+        }
+
+
+        .hole3 {
+            bottom: 50px;
+            left: 50%;
+
+            transform: translateX(-50%);
+        }
+
+
+        /* =========================
+           にんじん
+        ========================= */
+
+        .carrot {
+
+            position: absolute;
+
+            font-size: 65px;
+
+            cursor: pointer;
+
+            pointer-events: auto;
+
+            user-select: none;
+
+            transition:
+                transform 0.35s ease,
+                opacity 0.35s ease;
+        }
+
+
+        .carrot1 {
+            top: 10px;
+            left: 47px;
+        }
+
+
+        .carrot2 {
+            top: 10px;
+            right: 47px;
+        }
+
+
+        .carrot3 {
+            bottom: 5px;
+            left: 50%;
+
+            transform: translateX(-50%);
+        }
+
+
+        /* =========================
+           抜いたときのアニメーション
+        ========================= */
+
+        .carrot.pulled {
+            transform:
+                translateY(-90px) scale(1.1) rotate(-10deg);
+
+            opacity: 0;
+        }
+
+
+        .carrot3.pulled {
+            transform:
+                translateX(-50%) translateY(-90px) scale(1.1) rotate(10deg);
+
+            opacity: 0;
+        }
+
+
+        /* =========================
+           クリア画面
+        ========================= */
+
+        #clearScreen {
+
+            display: none;
+
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            z-index: 1001;
+
+            width: 85%;
+            max-width: 400px;
+
+            padding: 35px 20px;
+
+            background: rgba(255, 255, 255, 0.96);
+
+            border-radius: 24px;
+
+            text-align: center;
+
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+
+        #clearScreen h1 {
+
+            margin: 0 0 15px;
+
+            color: #2e7d32;
+
+            font-size: 38px;
+        }
+
+
+        #clearScreen p {
+
+            font-size: 20px;
+
+            margin-bottom: 20px;
         }
     </style>
 </head>
 
+
 <body>
 
+    <!-- マーカー位置確認用 -->
     <div class="target"></div>
+
+
+    <!-- =========================
+         ゲーム用UI
+    ========================== -->
 
     <div class="ui">
 
-        <h2 id="spotName">スポット</h2>
+        <h2 id="spotName">
+            🥕 にんじん収穫
+        </h2>
 
-        <p id="debug"></p>
+        <div id="count">
+            収穫：0 / 3
+        </div>
 
         <div id="message">
             マーカーを中央に合わせてください
@@ -99,62 +353,307 @@
 
     </div>
 
-    <a-scene
-        embedded
-        vr-mode-ui="enabled: false"
-        renderer="antialias: true; precision: medium;"
-        arjs="
+
+    <!-- =========================
+         にんじん収穫ゲーム
+    ========================== -->
+
+    <div id="game">
+
+        <div class="field">
+
+            <!-- 穴 -->
+            <div class="hole hole1"></div>
+            <div class="hole hole2"></div>
+            <div class="hole hole3"></div>
+
+
+            <!-- にんじん -->
+            <div class="carrot carrot1" data-carrot="1">
+                🥕
+            </div>
+
+            <div class="carrot carrot2" data-carrot="2">
+                🥕
+            </div>
+
+            <div class="carrot carrot3" data-carrot="3">
+                🥕
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         クリア画面
+    ========================== -->
+
+    <div id="clearScreen">
+
+        <h1>
+            🎉 クリア！
+        </h1>
+
+        <p>
+            にんじんを3本収穫しました！
+        </p>
+
+        <a class="back" href="index.html">
+            ホームへ戻る
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         A-Frame / AR.js
+    ========================== -->
+
+    <a-scene embedded vr-mode-ui="enabled: false" renderer="
+            antialias: true;
+            precision: medium;
+        " arjs="
             sourceType: webcam;
             facingMode: environment;
             debugUIEnabled: false;
         ">
 
-        <!-- move.glb読込 -->
-        <a-assets>
-            <a-asset-item
-                id="moveModel"
-                src="models/move.glb">
-            </a-asset-item>
-        </a-assets>
 
-        <a-entity
-            camera
-            position="0 0 0">
-        </a-entity>
+        <a-camera>
+        </a-camera>
 
-        <!-- app.js が pattern URL を設定 -->
-        <a-marker
-            id="marker"
-            type="pattern"
-            url="">
 
-            <!-- GLBモデル -->
-            <a-entity
-                gltf-model="#moveModel"
-                animation-mixer
-                position="0 0 0"
-                scale="1 1 1"
-                rotation="-90 0 0">
-            </a-entity>
+        <!--
+            今回はテストなので
+            既存の jinja.patt を使用
+        -->
+
+        <a-marker id="marker" type="pattern" url="img/jinja.patt">
 
         </a-marker>
 
     </a-scene>
 
+
+    <!-- =========================
+         JavaScript
+    ========================== -->
+
     <script>
-        const marker = document.querySelector('#marker');
-        const message = document.querySelector('#message');
 
-        marker.addEventListener('markerFound', () => {
-            message.textContent = 'マーカー検出！';
+        /* =========================
+           要素取得
+        ========================== */
+
+        const marker =
+            document.getElementById("marker");
+
+        const target =
+            document.querySelector(".target");
+
+        const message =
+            document.getElementById("message");
+
+        const game =
+            document.getElementById("game");
+
+        const clearScreen =
+            document.getElementById("clearScreen");
+
+        const count =
+            document.getElementById("count");
+
+
+        /* =========================
+           収穫数
+        ========================== */
+
+        let harvestedCount = 0;
+
+
+        /* =========================
+           マーカーを見つけた
+        ========================== */
+
+        marker.addEventListener(
+            "markerFound",
+            () => {
+
+                console.log("マーカー発見");
+
+
+                /* 枠を緑色にする */
+
+                target.style.borderColor =
+                    "#4caf50";
+
+                target.style.background =
+                    "rgba(76,175,80,0.2)";
+
+
+                /* クリア済みならゲーム開始しない */
+
+                if (
+                    localStorage.getItem(
+                        "carrotHarvest"
+                    ) === "clear"
+                ) {
+
+                    message.textContent =
+                        "✔ 収穫済みです";
+
+                    return;
+                }
+
+
+                /* ゲーム開始 */
+
+                game.style.display =
+                    "block";
+
+                message.textContent =
+                    "🥕 にんじんをタップして収穫しよう！";
+
+            }
+        );
+
+
+        /* =========================
+           マーカーを見失った
+        ========================== */
+
+        marker.addEventListener(
+            "markerLost",
+            () => {
+
+                target.style.borderColor =
+                    "#ff9800";
+
+                target.style.background =
+                    "transparent";
+
+
+                if (
+                    localStorage.getItem(
+                        "carrotHarvest"
+                    ) !== "clear"
+                ) {
+
+                    message.textContent =
+                        "マーカーを中央に合わせてください";
+                }
+
+            }
+        );
+
+
+        /* =========================
+           にんじんクリック
+        ========================== */
+
+        const carrots =
+            document.querySelectorAll(
+                ".carrot"
+            );
+
+
+        carrots.forEach(carrot => {
+
+            carrot.addEventListener(
+                "click",
+                () => {
+
+                    /* すでに収穫済みなら何もしない */
+
+                    if (
+                        carrot.classList.contains(
+                            "pulled"
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    /* 抜く */
+
+                    carrot.classList.add(
+                        "pulled"
+                    );
+
+
+                    /* 収穫数を増やす */
+
+                    harvestedCount++;
+
+
+                    count.textContent =
+                        `収穫：${harvestedCount} / 3`;
+
+
+                    /* 3本収穫 */
+
+                    if (
+                        harvestedCount === 3
+                    ) {
+
+                        setTimeout(
+                            clearGame,
+                            500
+                        );
+
+                    }
+
+                }
+            );
+
         });
 
-        marker.addEventListener('markerLost', () => {
-            message.textContent = 'マーカーを中央に合わせてください';
-        });
+
+        /* =========================
+           クリア処理
+        ========================== */
+
+        function clearGame() {
+
+            /* LocalStorageへ保存 */
+
+            localStorage.setItem(
+                "carrotHarvest",
+                "clear"
+            );
+
+
+            /* ゲームを隠す */
+
+            game.style.display =
+                "none";
+
+
+            /* UIメッセージ */
+
+            message.textContent =
+                "🎉 にんじん収穫クリア！";
+
+
+            message.style.color =
+                "#2e7d32";
+
+
+            /* クリア画面 */
+
+            clearScreen.style.display =
+                "block";
+
+
+            console.log(
+                "にんじん収穫クリア"
+            );
+
+        }
+
     </script>
-
-    <script src="app.js"></script>
 
 </body>
 
