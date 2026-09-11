@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width,
+        initial-scale=1.0,
+        maximum-scale=1.0,
+        user-scalable=no">
+
+    <title>霧を晴らそう</title>
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+
+        /* =====================
+           マーカー枠
+        ===================== */
+
+        .target {
+
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            width: 180px;
+            height: 180px;
+
+            border: 4px dashed #ff9800;
+
+            border-radius: 12px;
+
+            z-index: 998;
+
+            pointer-events: none;
+        }
+
+
+        /* =====================
+           上の説明
+        ===================== */
+
+        .ui {
+
+            position: fixed;
+
+            top: 20px;
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width: 90%;
+            max-width: 400px;
+
+            background:
+                rgba(255, 255, 255, 0.95);
+
+            padding: 15px;
+
+            border-radius: 16px;
+
+            text-align: center;
+
+            box-sizing: border-box;
+
+            z-index: 999;
+        }
+
+
+        .ui h2 {
+
+            margin:
+                0 0 10px;
+
+        }
+
+
+        #message {
+
+            margin: 5px 0;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =====================
+           霧
+        ===================== */
+
+        #mist {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background:
+                rgba(230, 230, 230, 0.92);
+
+            z-index: 900;
+
+            /*
+             * 指で触れるため
+             */
+            touch-action: none;
+
+        }
+
+
+        /* =====================
+           なぞった跡
+        ===================== */
+
+        .clear-area {
+
+            position: absolute;
+
+            width: 80px;
+            height: 80px;
+
+            border-radius: 50%;
+
+            background:
+                transparent;
+
+            box-shadow:
+                0 0 0 1000px rgba(230, 230, 230, 0.92);
+
+            /*
+             * 霧をくり抜く
+             */
+            mix-blend-mode: destination-out;
+
+        }
+
+
+        /* =====================
+           クリア画面
+        ===================== */
+
+        #clearScreen {
+
+            display: none;
+
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            width: 85%;
+            max-width: 400px;
+
+            background: white;
+
+            padding: 30px 20px;
+
+            border-radius: 20px;
+
+            text-align: center;
+
+            z-index: 1100;
+
+            box-sizing: border-box;
+        }
+
+
+        #clearScreen h2 {
+
+            font-size: 32px;
+
+            margin:
+                0 0 15px;
+
+        }
+
+
+        .back {
+
+            display: block;
+
+            margin-top: 20px;
+
+            padding: 12px;
+
+            background: #2e7d32;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+        }
+
+
+        /* =====================
+           進捗
+        ===================== */
+
+        #progress {
+
+            font-size: 16px;
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- マーカー位置確認 -->
+
+    <div class="target"></div>
+
+
+    <!-- 説明 -->
+
+    <div class="ui">
+
+        <h2>🌫️ 霧を晴らそう</h2>
+
+        <p id="message">
+            マーカーを中央に合わせてください
+        </p>
+
+        <p id="progress">
+            霧を晴らそう！
+        </p>
+
+    </div>
+
+
+    <!-- =====================
+         霧
+    ====================== -->
+
+    <div id="mist"></div>
+
+
+    <!-- =====================
+         クリア画面
+    ====================== -->
+
+    <div id="clearScreen">
+
+        <h2>🎉 クリア！</h2>
+
+        <p>
+            霧が晴れました！
+        </p>
+
+        <a class="back" href="index.html">
+
+            ホームへ戻る
+
+        </a>
+
+    </div>
+
+
+    <!-- =====================
+         AR
+    ====================== -->
+
+    <a-scene embedded vr-mode-ui="enabled: false" arjs="
+            sourceType: webcam;
+            facingMode: environment;
+            debugUIEnabled: false;
+        ">
+
+
+        <a-marker id="marker" type="pattern" url="img/jinja.patt">
+
+        </a-marker>
+
+
+        <a-entity camera></a-entity>
+
+
+    </a-scene>
+
+
+    <script>
+
+        // =====================
+        // 要素取得
+        // =====================
+
+        const marker =
+            document.getElementById("marker");
+
+        const message =
+            document.getElementById("message");
+
+        const target =
+            document.querySelector(".target");
+
+        const mist =
+            document.getElementById("mist");
+
+        const progress =
+            document.getElementById("progress");
+
+        const clearScreen =
+            document.getElementById("clearScreen");
+
+
+        // =====================
+        // 状態
+        // =====================
+
+        let started = false;
+
+        let clearCount = 0;
+
+        const requiredCount = 25;
+
+
+        // =====================
+        // マーカー発見
+        // =====================
+
+        marker.addEventListener(
+            "markerFound",
+            () => {
+
+                started = true;
+
+                message.textContent =
+                    "指で霧をこすって晴らそう！";
+
+                target.style.borderColor =
+                    "#4caf50";
+
+            }
+        );
+
+
+        // =====================
+        // マーカーを見失った
+        // =====================
+
+        marker.addEventListener(
+            "markerLost",
+            () => {
+
+                started = false;
+
+                message.textContent =
+                    "マーカーを中央に合わせてください";
+
+                target.style.borderColor =
+                    "#ff9800";
+
+            }
+        );
+
+
+        // =====================
+        // 霧をこする
+        // =====================
+
+        mist.addEventListener(
+            "pointermove",
+            (event) => {
+
+                if (!started) {
+                    return;
+                }
+
+                /*
+                 * 指で触れた場所に
+                 * 透明な円を作る
+                 */
+
+                const area =
+                    document.createElement("div");
+
+                area.className =
+                    "clear-area";
+
+                area.style.left =
+                    (event.clientX - 40) + "px";
+
+                area.style.top =
+                    (event.clientY - 40) + "px";
+
+                mist.appendChild(area);
+
+
+                // =====================
+                // 進捗
+                // =====================
+
+                clearCount++;
+
+
+                progress.textContent =
+                    `霧を晴らす ${clearCount}/${requiredCount}`;
+
+
+                // =====================
+                // クリア
+                // =====================
+
+                if (
+                    clearCount >=
+                    requiredCount
+                ) {
+
+                    clearGame();
+
+                }
+
+            }
+        );
+
+
+        // =====================
+        // クリア処理
+        // =====================
+
+        function clearGame() {
+
+            started = false;
+
+            mist.style.display =
+                "none";
+
+            clearScreen.style.display =
+                "block";
+
+
+            // LocalStorage保存
+
+            localStorage.setItem(
+                "mistClear",
+                "clear"
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
