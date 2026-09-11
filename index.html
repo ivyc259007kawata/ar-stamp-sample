@@ -42,10 +42,14 @@
 
                 <div>
                     🌫️ 霧を晴らす
+
+                    <span id="mistStatus"></span>
                 </div>
 
-                <a class="btn" href="mist.html">
+                <a class="btn" href="mist.html" id="mistButton">
+
                     挑戦する
+
                 </a>
 
             </div>
@@ -167,6 +171,43 @@
         } else {
 
             carrotStatus.textContent = "未収穫";
+
+        }
+
+        // =====================
+        // 霧を晴らす
+        // =====================
+
+        const mistStatus =
+            document.getElementById("mistStatus");
+
+        const mistButton =
+            document.getElementById("mistButton");
+
+        const mistClear =
+            localStorage.getItem("mistClear");
+
+
+        if (mistClear) {
+
+            mistStatus.innerHTML = `
+        ✔ クリア
+        <img
+            src="img/判子アイコン3.png"
+            alt="クリア"
+            style="
+                width:40px;
+                vertical-align:middle;
+            ">
+        `;
+
+            mistButton.textContent =
+                "クリア済み";
+
+        } else {
+
+            mistStatus.textContent =
+                "未クリア";
 
         }
 

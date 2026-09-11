@@ -55,7 +55,7 @@
 
 
         /* =====================
-           上の説明
+           上部メッセージ
         ===================== */
 
         .ui {
@@ -82,15 +82,12 @@
 
             box-sizing: border-box;
 
-            z-index: 999;
+            z-index: 1000;
         }
 
 
         .ui h2 {
-
-            margin:
-                0 0 10px;
-
+            margin: 0 0 10px;
         }
 
 
@@ -101,7 +98,6 @@
             font-size: 18px;
 
             font-weight: bold;
-
         }
 
 
@@ -120,41 +116,64 @@
             height: 100%;
 
             background:
-                rgba(230, 230, 230, 0.92);
+                rgba(220, 225, 230, 0.95);
 
             z-index: 900;
 
-            /*
-             * 指で触れるため
-             */
-            touch-action: none;
+            display: none;
 
+            touch-action: none;
         }
 
 
         /* =====================
-           なぞった跡
+           霧をこすった場所
         ===================== */
 
         .clear-area {
 
             position: absolute;
 
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
 
             border-radius: 50%;
 
-            background:
-                transparent;
+            background: white;
 
-            box-shadow:
-                0 0 0 1000px rgba(230, 230, 230, 0.92);
+            opacity: 0;
 
-            /*
-             * 霧をくり抜く
-             */
-            mix-blend-mode: destination-out;
+            pointer-events: none;
+        }
+
+
+        /* =====================
+           アイテム
+        ===================== */
+
+        #item {
+
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%) scale(0);
+
+            font-size: 90px;
+
+            z-index: 1050;
+
+            transition:
+                transform 0.5s ease;
+        }
+
+
+        #item.show {
+
+            transform:
+                translate(-50%, -50%) scale(1);
 
         }
 
@@ -186,9 +205,9 @@
 
             text-align: center;
 
-            z-index: 1100;
-
             box-sizing: border-box;
+
+            z-index: 1100;
         }
 
 
@@ -196,8 +215,7 @@
 
             font-size: 32px;
 
-            margin:
-                0 0 15px;
+            margin: 0 0 15px;
 
         }
 
@@ -217,18 +235,6 @@
             text-decoration: none;
 
             border-radius: 8px;
-
-        }
-
-
-        /* =====================
-           進捗
-        ===================== */
-
-        #progress {
-
-            font-size: 16px;
-
         }
     </style>
 
@@ -238,23 +244,23 @@
 <body>
 
 
-    <!-- マーカー位置確認 -->
+    <!-- =====================
+         マーカー枠
+    ====================== -->
 
     <div class="target"></div>
 
 
-    <!-- 説明 -->
+    <!-- =====================
+         説明
+    ====================== -->
 
     <div class="ui">
 
-        <h2>🌫️ 霧を晴らそう</h2>
+        <h2>🌫️ 霧の中を調べよう</h2>
 
         <p id="message">
-            マーカーを中央に合わせてください
-        </p>
-
-        <p id="progress">
-            霧を晴らそう！
+            マーカーを読み取ってください
         </p>
 
     </div>
@@ -268,6 +274,15 @@
 
 
     <!-- =====================
+         アイテム
+    ====================== -->
+
+    <div id="item">
+        🔑
+    </div>
+
+
+    <!-- =====================
          クリア画面
     ====================== -->
 
@@ -276,7 +291,7 @@
         <h2>🎉 クリア！</h2>
 
         <p>
-            霧が晴れました！
+            霧の中からアイテムを見つけた！
         </p>
 
         <a class="back" href="index.html">
@@ -306,7 +321,6 @@
 
         <a-entity camera></a-entity>
 
-
     </a-scene>
 
 
@@ -328,8 +342,8 @@
         const mist =
             document.getElementById("mist");
 
-        const progress =
-            document.getElementById("progress");
+        const item =
+            document.getElementById("item");
 
         const clearScreen =
             document.getElementById("clearScreen");
@@ -343,7 +357,7 @@
 
         let clearCount = 0;
 
-        const requiredCount = 25;
+        const requiredCount = 30;
 
 
         // =====================
@@ -354,13 +368,45 @@
             "markerFound",
             () => {
 
+                if (
+                    localStorage.getItem(
+                        "mistClear"
+                    )
+                ) {
+
+                    message.textContent =
+                        "✔ クリア済み";
+
+                    return;
+
+                }
+
+
                 started = true;
 
+                mist.style.display =
+                    "block";
+
                 message.textContent =
-                    "指で霧をこすって晴らそう！";
+                    "🌫️ 霧が出てきた！";
 
                 target.style.borderColor =
                     "#4caf50";
+
+
+                // 少し待ってから
+                // 操作説明を変更
+
+                setTimeout(() => {
+
+                    if (started) {
+
+                        message.textContent =
+                            "👆 指で霧をこすって晴らそう！";
+
+                    }
+
+                }, 1500);
 
             }
         );
@@ -375,9 +421,6 @@
             () => {
 
                 started = false;
-
-                message.textContent =
-                    "マーカーを中央に合わせてください";
 
                 target.style.borderColor =
                     "#ff9800";
@@ -398,10 +441,19 @@
                     return;
                 }
 
-                /*
-                 * 指で触れた場所に
-                 * 透明な円を作る
-                 */
+
+                // 指が押されていない状態では
+                // 何もしない
+
+                if (
+                    event.buttons !== 1 &&
+                    event.pointerType !== "touch"
+                ) {
+                    return;
+                }
+
+
+                // こすった場所を記録
 
                 const area =
                     document.createElement("div");
@@ -409,28 +461,22 @@
                 area.className =
                     "clear-area";
 
+
                 area.style.left =
-                    (event.clientX - 40) + "px";
+                    (event.clientX - 50) + "px";
 
                 area.style.top =
-                    (event.clientY - 40) + "px";
+                    (event.clientY - 50) + "px";
+
 
                 mist.appendChild(area);
 
 
-                // =====================
-                // 進捗
-                // =====================
-
                 clearCount++;
 
 
-                progress.textContent =
-                    `霧を晴らす ${clearCount}/${requiredCount}`;
-
-
                 // =====================
-                // クリア
+                // 一定量こすったら
                 // =====================
 
                 if (
@@ -438,7 +484,7 @@
                     requiredCount
                 ) {
 
-                    clearGame();
+                    findItem();
 
                 }
 
@@ -447,19 +493,45 @@
 
 
         // =====================
-        // クリア処理
+        // アイテム発見
         // =====================
 
-        function clearGame() {
+        function findItem() {
 
             started = false;
+
+
+            // 霧を消す
 
             mist.style.display =
                 "none";
 
-            clearScreen.style.display =
-                "block";
 
+            message.textContent =
+                "✨ 何か見つけた！";
+
+
+            // アイテムを表示
+
+            item.classList.add("show");
+
+
+            // 少し待ってクリア画面
+
+            setTimeout(() => {
+
+                clearGame();
+
+            }, 1500);
+
+        }
+
+
+        // =====================
+        // クリア
+        // =====================
+
+        function clearGame() {
 
             // LocalStorage保存
 
@@ -467,6 +539,15 @@
                 "mistClear",
                 "clear"
             );
+
+
+            item.classList.remove(
+                "show"
+            );
+
+
+            clearScreen.style.display =
+                "block";
 
         }
 
