@@ -5,7 +5,8 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width,
+    <meta name="viewport"
+        content="width=device-width,
         initial-scale=1.0,
         maximum-scale=1.0,
         user-scalable=no">
@@ -19,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
 
     <style>
+
         body {
             margin: 0;
             overflow: hidden;
@@ -134,7 +136,8 @@
             left: 50%;
 
             transform:
-                translate(-50%, -50%) scale(0);
+                translate(-50%, -50%)
+                scale(0);
 
             font-size: 90px;
 
@@ -148,7 +151,8 @@
         #item.show {
 
             transform:
-                translate(-50%, -50%) scale(1);
+                translate(-50%, -50%)
+                scale(1);
         }
 
 
@@ -248,6 +252,7 @@
 
             z-index: 1100;
         }
+
     </style>
 
 </head>
@@ -317,7 +322,9 @@
             アイテムを見つけた！
         </p>
 
-        <a class="back" href="index.html">
+        <a
+            class="back"
+            href="index.html">
 
             ホームへ戻る
 
@@ -330,14 +337,26 @@
          AR
     ===================== -->
 
-    <a-scene embedded vr-mode-ui="enabled: false" arjs="
+    <a-scene
+
+        embedded
+
+        vr-mode-ui="enabled: false"
+
+        arjs="
             sourceType: webcam;
             facingMode: environment;
             debugUIEnabled: false;
         ">
 
 
-        <a-marker id="marker" type="pattern" url="img/jinja.patt">
+        <a-marker
+
+            id="marker"
+
+            type="pattern"
+
+            url="img/jinja.patt">
 
         </a-marker>
 
@@ -379,3 +398,461 @@
         /* =====================
            Canvas準備
         ===================== */
+
+        const ctx =
+            mistCanvas.getContext("2d");
+
+
+        /* =====================
+           設定
+        ===================== */
+
+        // 霧の濃さ
+        const fogOpacity = 0.92;
+
+
+        // こするブラシの大きさ
+        const brushSize = 90;
+
+
+        // 霧を何％消したらクリアするか
+        const clearPercentage = 65;
+
+
+        let started = false;
+
+        let cleared = false;
+
+
+        /* =====================
+           Canvasサイズ調整
+        ===================== */
+
+        function resizeCanvas() {
+
+            mistCanvas.width =
+                window.innerWidth;
+
+            mistCanvas.height =
+                window.innerHeight;
+
+        }
+
+
+        resizeCanvas();
+
+
+        window.addEventListener(
+            "resize",
+            resizeCanvas
+        );
+
+
+        /* =====================
+           霧を描く
+        ===================== */
+
+        function drawMist() {
+
+            ctx.globalCompositeOperation =
+                "source-over";
+
+
+            ctx.fillStyle =
+                `rgba(
+                    220,
+                    225,
+                    230,
+                    ${fogOpacity}
+                )`;
+
+
+            ctx.fillRect(
+
+                0,
+                0,
+
+                mistCanvas.width,
+                mistCanvas.height
+
+            );
+
+        }
+
+
+        /* =====================
+           霧を消す
+        ===================== */
+
+        function eraseMist(x, y) {
+
+            ctx.globalCompositeOperation =
+                "destination-out";
+
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+
+                x,
+                y,
+
+                brushSize / 2,
+
+                0,
+                Math.PI * 2
+
+            );
+
+
+            ctx.fill();
+
+        }
+
+
+        /* =====================
+           霧がどれくらい残っているか
+        ===================== */
+
+        function checkMist() {
+
+            /*
+             * Canvasの画像データを取得
+             */
+
+            const imageData =
+                ctx.getImageData(
+
+                    0,
+                    0,
+
+                    mistCanvas.width,
+                    mistCanvas.height
+
+                );
+
+
+            const data =
+                imageData.data;
+
+
+            let visiblePixels = 0;
+
+            let totalPixels = 0;
+
+
+            /*
+             * 全ピクセルを確認
+             *
+             * ただしスマホで重くならないように
+             * 10ピクセルおきに確認
+             */
+
+            for (
+                let i = 3;
+                i < data.length;
+                i += 4 * 10
+            ) {
+
+                totalPixels++;
+
+
+                /*
+                 * alpha値
+                 *
+                 * 0なら透明
+                 */
+
+                if (data[i] > 20) {
+
+                    visiblePixels++;
+
+                }
+
+            }
+
+
+            /*
+             * 霧が残っている割合
+             */
+
+            const remaining =
+                (visiblePixels / totalPixels)
+                * 100;
+
+
+            /*
+             * 消えた割合
+             */
+
+            const clearedPercentage =
+                100 - remaining;
+
+
+            /*
+             * クリア判定
+             */
+
+            if (
+                clearedPercentage >=
+                clearPercentage
+            ) {
+
+                findItem();
+
+            }
+
+        }
+
+
+        /* =====================
+           マーカー発見
+        ===================== */
+
+        marker.addEventListener(
+            "markerFound",
+            () => {
+
+
+                if (
+                    localStorage.getItem(
+                        "mistClear"
+                    )
+                ) {
+
+                    message.textContent =
+                        "✔ クリア済み";
+
+                    return;
+
+                }
+
+
+                if (cleared) {
+
+                    return;
+
+                }
+
+
+                started = true;
+
+
+                target.style.borderColor =
+                    "#4caf50";
+
+
+                message.textContent =
+                    "🌫️ 霧が出てきた！";
+
+
+                drawMist();
+
+
+                /*
+                 * こする説明を表示
+                 */
+
+                rubMessage.style.display =
+                    "block";
+
+
+            }
+        );
+
+
+        /* =====================
+           マーカーを見失った
+        ===================== */
+
+        marker.addEventListener(
+            "markerLost",
+            () => {
+
+                /*
+                 * ここではゲームを
+                 * リセットしない
+                 */
+
+                target.style.borderColor =
+                    "#ff9800";
+
+            }
+        );
+
+
+        /* =====================
+           指でこする
+        ===================== */
+
+        let isDrawing = false;
+
+
+        mistCanvas.addEventListener(
+            "pointerdown",
+            (event) => {
+
+                if (!started) {
+
+                    return;
+
+                }
+
+
+                isDrawing = true;
+
+
+                eraseMist(
+
+                    event.clientX,
+                    event.clientY
+
+                );
+
+            }
+        );
+
+
+        mistCanvas.addEventListener(
+            "pointermove",
+            (event) => {
+
+                if (
+                    !started ||
+                    !isDrawing
+                ) {
+
+                    return;
+
+                }
+
+
+                eraseMist(
+
+                    event.clientX,
+                    event.clientY
+
+                );
+
+            }
+        );
+
+
+        mistCanvas.addEventListener(
+            "pointerup",
+            () => {
+
+                isDrawing = false;
+
+                checkMist();
+
+            }
+        );
+
+
+        mistCanvas.addEventListener(
+            "pointercancel",
+            () => {
+
+                isDrawing = false;
+
+            }
+        );
+
+
+        /* =====================
+           アイテム発見
+        ===================== */
+
+        function findItem() {
+
+            if (cleared) {
+
+                return;
+
+            }
+
+
+            cleared = true;
+
+            started = false;
+
+
+            rubMessage.style.display =
+                "none";
+
+
+            /*
+             * 霧を完全に消す
+             */
+
+            ctx.clearRect(
+
+                0,
+                0,
+
+                mistCanvas.width,
+                mistCanvas.height
+
+            );
+
+
+            message.textContent =
+                "✨ 何か見つけた！";
+
+
+            /*
+             * 鍵を表示
+             */
+
+            item.classList.add(
+                "show"
+            );
+
+
+            /*
+             * 少し待ってクリア
+             */
+
+            setTimeout(() => {
+
+                clearGame();
+
+            }, 1500);
+
+        }
+
+
+        /* =====================
+           クリア
+        ===================== */
+
+        function clearGame() {
+
+            /*
+             * LocalStorageに保存
+             */
+
+            localStorage.setItem(
+                "mistClear",
+                "clear"
+            );
+
+
+            item.classList.remove(
+                "show"
+            );
+
+
+            clearScreen.style.display =
+                "block";
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
