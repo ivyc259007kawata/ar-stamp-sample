@@ -24,6 +24,21 @@
 
             <div id="spotList"></div>
 
+            <!-- にんじん収穫ミニゲーム -->
+            <div class="mini-game">
+                <div>
+                    🥕 にんじん収穫
+
+                    <span id="carrotStatus"></span>
+                </div>
+
+                <a class="btn" href="ar.html">
+                    収穫する
+                </a>
+            </div>
+
+            <div id="debugArea"></div>
+
             <div id="debugArea"></div>
 
         </div>
@@ -116,6 +131,31 @@
         // debugAreaへ追加
         const debugArea =
             document.getElementById("debugArea");
+
+        // =====================
+        // にんじん収穫
+        // =====================
+
+        const carrotStatus =
+            document.getElementById("carrotStatus");
+
+        const carrotClear =
+            localStorage.getItem("carrotHarvest");
+
+        if (carrotClear) {
+
+            carrotStatus.innerHTML = `
+        ✔ 収穫済み
+        <img src="img/判子アイコン3.png"
+                alt="取得済み"
+                style="width:40px; vertical-align:middle;">
+            `;
+
+        } else {
+
+            carrotStatus.textContent = "未収穫";
+
+        }
 
         debugArea.appendChild(testBtn);
         debugArea.appendChild(resetBtn);
