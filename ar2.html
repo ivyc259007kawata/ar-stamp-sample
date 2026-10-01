@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>スポット2 てんぐのおめん</title>
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+    <!-- MindAR -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background: #111;
+            overflow: hidden;
+        }
+
+        /* =========================
+           AR画面
+        ========================= */
+
+        #arContainer {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* =========================
+           最初の案内
+        ========================= */
+
+        .screen {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+
+            text-align: center;
+        }
+
+        .screen h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .screen p {
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        /* =========================
+           クイズ
+        ========================= */
+
+        #quizScreen {
+            display: none;
+        }
+
+        #quizScreen h2 {
+            font-size: 24px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .answer-button {
+            width: 90%;
+            max-width: 350px;
+
+            margin: 8px 0;
+            padding: 16px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: white;
+            color: #222;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .answer-button:active {
+            transform: scale(0.97);
+        }
+
+        /* =========================
+           お面画面
+        ========================= */
+
+        #maskScreen {
+            display: none;
+
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        #maskScreen h2 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 26px;
+
+            text-shadow:
+                0 2px 4px #000;
+        }
+
+        #maskScreen p {
+            margin-bottom: 20px;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            text-shadow:
+                0 2px 4px #000;
+        }
+
+        /*
+         * カメラ映像の上に表示する
+         * てんぐのお面
+         */
+        #tenguMaskImage {
+            position: absolute;
+
+            width: 600px;
+            /*本番は1000*/
+            height: auto;
+
+            left: 50%;
+            top: 42%;
+
+            transform: translate(-50%, -50%);
+
+            pointer-events: none;
+
+            z-index: 11;
+        }
+
+        #completeButton {
+            position: absolute;
+
+            left: 50%;
+            bottom: 30px;
+
+            transform: translateX(-50%);
+
+            z-index: 20;
+
+            padding: 16px 28px;
+
+            border: none;
+            border-radius: 999px;
+
+            background: white;
+            color: #222;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        #completeButton:active {
+            transform: scale(0.95);
+        }
+
+        /* =========================
+           正解表示
+        ========================= */
+
+        #correctScreen {
+            display: none;
+        }
+
+        #correctScreen h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        #correctScreen p {
+            font-size: 20px;
+        }
+
+        /* =========================
+           クリア画面
+        ========================= */
+
+        #clearScreen {
+            display: none;
+        }
+
+        #clearScreen h2 {
+            font-size: 32px;
+        }
+
+        #clearScreen p {
+            font-size: 20px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================
+         ARカメラ
+    ========================= -->
+
+    <div id="arContainer">
+
+        <a-scene mindar-image="
+                imageTargetSrc: ./park.mind;
+                autoStart: true;
+                uiScanning: yes;
+                uiLoading: yes;
+            " embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"
+            vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+
+            <a-camera position="0 0 0" look-controls="enabled: false">
+            </a-camera>
+
+            <!-- マーカーを認識した場所 -->
+            <a-entity id="target" mindar-image-target="targetIndex: 0">
+            </a-entity>
+
+        </a-scene>
+
+    </div>
+
+
+    <!-- =========================
+         最初の案内
+    ========================= -->
+
+    <div id="startScreen" class="screen">
+
+        <h1>👺 てんぐのおめん</h1>
+
+        <p>
+            マーカーをカメラに映して<br>
+            てんぐのクイズに挑戦しよう！
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         クイズ画面
+    ========================= -->
+
+    <div id="quizScreen" class="screen">
+
+        <h2>
+            庄内神楽で使われるお面のうち、<br>
+            真っ赤な顔で長い鼻を持つ<br>
+            妖怪・神様はなんでしょう？
+        </h2>
+
+        <button class="answer-button" data-answer="tengu">
+            👺 てんぐ
+        </button>
+
+        <button class="answer-button" data-answer="kappa">
+            🥒 かっぱ
+        </button>
+
+        <button class="answer-button" data-answer="oni">
+            👹 おに
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         正解画面
+    ========================= -->
+
+    <div id="correctScreen" class="screen">
+
+        <h2>🎉 正解！</h2>
+
+        <p>
+            正解は「てんぐ」です！
+        </p>
+
+        <p>
+            次は、てんぐのお面をつけてみよう！
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         お面画面
+    ========================= -->
+
+    <div id="maskScreen" class="screen">
+
+        <!-- 実際のお面画像 -->
+        <img id="tenguMaskImage" src="tengu-mask.png" alt="てんぐのお面">
+
+        <button id="completeButton">
+            📸 さつえい完了！
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         クリア画面
+    ========================= -->
+
+    <div id="clearScreen" class="screen">
+
+        <h2>🎉 スタンプゲット！</h2>
+
+        <p>
+            てんぐのお面体験クリア！
+            <br>
+            スタンプカードを確認しよう！
+        </p>
+
+    </div>
+
+
+    <!-- スタンプ管理 -->
+    <script src="app.js"></script>
+
+
+    <script>
+
+        /* =========================
+           HTML要素を取得
+        ========================= */
+
+        const startScreen =
+            document.getElementById("startScreen");
+
+        const quizScreen =
+            document.getElementById("quizScreen");
+
+        const correctScreen =
+            document.getElementById("correctScreen");
+
+        const maskScreen =
+            document.getElementById("maskScreen");
+
+        const clearScreen =
+            document.getElementById("clearScreen");
+
+        const completeButton =
+            document.getElementById("completeButton");
+
+
+        /* =========================
+           MindARのターゲット
+        ========================= */
+
+        const target =
+            document.getElementById("target");
+
+
+        /*
+         * マーカーを認識したとき
+         */
+        target.addEventListener("targetFound", () => {
+
+            console.log("てんぐスポットのマーカーを認識しました");
+
+            /*
+             * すでにクリア済みなら
+             * クイズをもう一度やらなくてもよい
+             */
+            if (StampApp.isCleared("park")) {
+
+                startScreen.style.display = "none";
+
+                clearScreen.style.display = "flex";
+
+                setTimeout(() => {
+                    location.href = "stamp.html?spot=park";
+                }, 1500);
+
+                return;
+            }
+
+
+            /*
+             * 最初の案内を消す
+             */
+            startScreen.style.display = "none";
+
+
+            /*
+             * クイズを表示
+             */
+            quizScreen.style.display = "flex";
+
+        });
+
+
+        /* =========================
+           クイズの回答
+        ========================= */
+
+        const answerButtons =
+            document.querySelectorAll(".answer-button");
+
+
+        answerButtons.forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                const answer =
+                    button.dataset.answer;
+
+
+                /*
+                 * 正解
+                 */
+                if (answer === "tengu") {
+
+                    console.log("クイズ正解！");
+
+
+                    /*
+                     * クイズ画面を消す
+                     */
+                    quizScreen.style.display = "none";
+
+
+                    /*
+                     * 正解画面を表示
+                     */
+                    correctScreen.style.display = "flex";
+
+
+                    /*
+                     * 少し待ってから
+                     * お面画面へ
+                     */
+                    setTimeout(() => {
+
+                        correctScreen.style.display = "none";
+
+                        maskScreen.style.display = "flex";
+
+                    }, 1800);
+
+
+                } else {
+
+                    /*
+                     * 不正解
+                     */
+                    alert("おしい！もう一度考えてみよう！");
+
+                }
+
+            });
+
+        });
+
+
+        /* =========================
+           さつえい完了
+        ========================= */
+
+        completeButton.addEventListener("click", () => {
+
+            console.log("さつえい完了ボタンが押されました");
+
+
+            /*
+             * 2つ目のスポットをクリア
+             *
+             * park = 今回の2つ目のスポット
+             */
+            const completed =
+                StampApp.completeSpot("park");
+
+
+            console.log(
+                "スタンプ獲得結果:",
+                completed
+            );
+
+
+            /*
+             * お面画面を消す
+             */
+            maskScreen.style.display = "none";
+
+
+            /*
+             * クリア画面を表示
+             */
+            clearScreen.style.display = "flex";
+
+
+            /*
+             * 1.5秒後にスタンプカードへ
+             */
+            setTimeout(() => {
+
+                location.href =
+                    "stamp.html?spot=park";
+
+            }, 1500);
+
+        });
+
+    </script>
+
+</body>
+
+</html>

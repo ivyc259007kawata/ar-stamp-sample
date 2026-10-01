@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スタンプ一覧</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <main>
+
+        <div class="card">
+
+            <h1>スタンプ一覧</h1>
+
+            <p id="stampProgress"></p>
+
+            <div id="stampList"></div>
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <a href="map.html">地図</a>
+        <a href="index.html">ホーム</a>
+        <a href="stamp.html">スタンプ</a>
+    </footer>
+
+    <script>
+
+        const SPOTS = [
+            { id: 'jinja', label: '🏯 神社' },
+            { id: 'park', label: '🌸 公園' },
+            { id: 'libra', label: '📚 図書館' }
+        ];
+
+        const stampList =
+            document.getElementById('stampList');
+
+        // スタンプ一覧表示
+        SPOTS.forEach(({ id, label }) => {
+
+            const clear =
+                localStorage.getItem(id);
+
+            const div =
+                document.createElement('div');
+
+            div.className = "spot";
+
+            div.innerHTML = `
+                <div>${label}</div>
+                <div>
+                    ${clear ? '✔取得済み' : '未取得'}
+                </div>
+            `;
+
+            stampList.appendChild(div);
+
+        });
+
+        // 取得数表示
+        const clearCount =
+            SPOTS.filter(
+                ({ id }) => localStorage.getItem(id)
+            ).length;
+
+        document.getElementById("stampProgress")
+            .textContent =
+            `取得数 ${clearCount}/${SPOTS.length}`;
+
+        // コンプリート判定
+        const complete =
+            SPOTS.every(
+                ({ id }) => localStorage.getItem(id)
+            );
+
+        if (complete) {
+
+            const msg =
+                document.createElement("div");
+
+            msg.className = "complete";
+
+            msg.innerHTML = `
+                <h2>🎉コンプリート！🎉</h2>
+                <p>スタッフへ画面をお見せください</p>
+            `;
+
+            stampList.appendChild(msg);
+        }
+
+    </script>
+
+</body>
+
+</html>

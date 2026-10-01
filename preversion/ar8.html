@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>謎解き⑧ 由布岳</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+            background: #eef3f5;
+        }
+
+        body {
+            touch-action: none;
+        }
+
+        /* =========================
+           画面上部
+        ========================= */
+
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        #headerBox {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 12px 16px;
+
+            background: rgba(255, 255, 255, 0.94);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.15);
+
+            text-align: center;
+        }
+
+        #headerBox h1 {
+            margin: 0 0 5px;
+            font-size: 20px;
+        }
+
+        #headerBox p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           Three.js表示部分
+        ========================= */
+
+        #canvasContainer {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;
+
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* =========================
+           説明
+        ========================= */
+
+        #message {
+            position: fixed;
+
+            left: 50%;
+            bottom: 25px;
+
+            transform: translateX(-50%);
+
+            width: calc(100% - 40px);
+            max-width: 500px;
+
+            padding: 12px 16px;
+
+            background: rgba(255, 255, 255, 0.94);
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 15px;
+            line-height: 1.5;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.15);
+
+            z-index: 20;
+        }
+
+
+        /* =========================
+           読み込み中
+        ========================= */
+
+        #loading {
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            padding: 20px 25px;
+
+            background: rgba(255, 255, 255, 0.95);
+
+            border-radius: 15px;
+
+            font-size: 16px;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.2);
+
+            z-index: 50;
+        }
+
+
+        /* =========================
+           エラー
+        ========================= */
+
+        #error {
+            display: none;
+
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            width: calc(100% - 40px);
+            max-width: 500px;
+
+            padding: 20px;
+
+            background: white;
+
+            border-radius: 15px;
+
+            text-align: center;
+
+            color: #c62828;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.2);
+
+            z-index: 60;
+        }
+
+
+        /* =========================
+           等高線
+        ========================= */
+
+        #contourCanvas {
+            display: none;
+
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            width: min(90vw, 500px);
+            height: min(90vw, 500px);
+
+            background: #f7f4ea;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.25);
+
+            z-index: 15;
+
+            pointer-events: none;
+        }
+
+
+        /* =========================
+           標高表示
+        ========================= */
+
+        #heightDisplay {
+            position: fixed;
+
+            top: 90px;
+            right: 15px;
+
+            padding: 8px 12px;
+
+            background: rgba(255, 255, 255, 0.9);
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            z-index: 20;
+
+            display: none;
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         ヘッダー
+    ========================= -->
+
+    <div id="header">
+
+        <div id="headerBox">
+
+            <h1>⛰️ 謎解き⑧ 由布岳</h1>
+
+            <p>
+                由布岳を指で動かしてみよう！<br>
+                真上から見ると何かが見えてくるよ。
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         Three.js表示部分
+    ========================= -->
+
+    <div id="canvasContainer"></div>
+
+
+    <!-- =========================
+         標高表示
+    ========================= -->
+
+    <div id="heightDisplay">
+        由布岳 標高 1,583m
+    </div>
+
+
+    <!-- =========================
+         メッセージ
+    ========================= -->
+
+    <div id="message">
+
+        👆 指でドラッグして<br>
+        由布岳をいろいろな方向から見てみよう！
+
+    </div>
+
+
+    <!-- =========================
+         読み込み中
+    ========================= -->
+
+    <div id="loading">
+
+        ⛰️ 由布岳を読み込んでいます……
+
+    </div>
+
+
+    <!-- =========================
+         エラー
+    ========================= -->
+
+    <div id="error">
+
+        <h2>読み込みエラー</h2>
+
+        <p>
+            由布岳のデータを読み込めませんでした。
+        </p>
+
+        <p>
+
+            <small>
+                dem.csv と texture.png が<br>
+                ar8.html と同じフォルダにあるか確認してください。
+            </small>
+
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         等高線
+    ========================= -->
+
+    <canvas id="contourCanvas"></canvas>
+
+
+    <!-- =========================
+         Three.js
+    ========================= -->
+
+    <script type="module">
+
+        /*
+         * ==========================================
+         * Three.js
+         * ==========================================
+         */
+
+        import * as THREE
+            from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+
+        /*
+         * ==========================================
+         * HTML要素
+         * ==========================================
+         */
+
+        const container =
+            document.getElementById("canvasContainer");
+
+        const loading =
+            document.getElementById("loading");
+
+        const errorBox =
+            document.getElementById("error");
+
+        const message =
+            document.getElementById("message");
+
+        const heightDisplay =
+            document.getElementById("heightDisplay");
+
+        const contourCanvas =
+            document.getElementById("contourCanvas");
+
+
+        /*
+         * ==========================================
+         * Scene
+         * ==========================================
+         */
+
+        const scene =
+            new THREE.Scene();
+
+        scene.background =
+            new THREE.Color(0xeaf1f3);
+
+
+        /*
+         * ==========================================
+         * カメラ
+         * ==========================================
+         */
+
+        const camera =
+            new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth /
+                window.innerHeight,
+                0.1,
+                1000
+            );
+
+        camera.position.set(
+            0,
+            18,
+            22
+        );
+
+
+        /*
+         * ==========================================
+         * Renderer
+         * ==========================================
+         */
+
+        const renderer =
+            new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: false
+            });
+
+        renderer.setPixelRatio(
+            Math.min(
+                window.devicePixelRatio,
+                2
+            )
+        );
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+        container.appendChild(
+            renderer.domElement
+        );
+
+
+        /*
+         * ==========================================
+         * 光
+         * ==========================================
+         */
+
+        const ambientLight =
+            new THREE.AmbientLight(
+                0xffffff,
+                2.0
+            );
+
+        scene.add(
+            ambientLight
+        );
+
+
+        const directionalLight =
+            new THREE.DirectionalLight(
+                0xffffff,
+                2.5
+            );
+
+        directionalLight.position.set(
+            10,
+            20,
+            10
+        );
+
+        scene.add(
+            directionalLight
+        );
+
+
+        /*
+         * ==========================================
+         * 由布岳グループ
+         * ==========================================
+         */
+
+        const terrainGroup =
+            new THREE.Group();
+
+        scene.add(
+            terrainGroup
+        );
+
+
+        /*
+         * ==========================================
+         * DEM設定
+         * ==========================================
+         */
+
+        const GRID_SIZE = 257;
+
+        const HEIGHT_SCALE = 1.8;
+
+        let demData = null;
+
+        let terrainMesh = null;
+
+        let texture = null;
+
+
+        /*
+         * ==========================================
+         * DEM読み込み
+         * ==========================================
+         */
+
+        async function loadDEM() {
+
+            const response =
+                await fetch("dem.csv");
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "dem.csvを読み込めませんでした"
+                );
+
+            }
+
+
+            const text =
+                await response.text();
+
+
+            /*
+             * CSVを数値に変換
+             */
+
+            demData =
+                text
+                    .trim()
+                    .split(/[\s,]+/)
+                    .map(Number);
+
+
+            console.log(
+                "DEMデータ数:",
+                demData.length
+            );
+
+
+            /*
+             * 257 × 257
+             */
+
+            if (
+                demData.length !==
+                GRID_SIZE * GRID_SIZE
+            ) {
+
+                console.warn(
+                    "DEMデータ数が想定と違います:",
+                    demData.length
+                );
+
+            }
+
+        }
+
+
+        /*
+         * ==========================================
+         * テクスチャ読み込み
+         * ==========================================
+         */
+
+        function loadTexture() {
+
+            return new Promise(
+                (resolve, reject) => {
+
+                    const loader =
+                        new THREE.TextureLoader();
+
+
+                    loader.load(
+
+                        "texture.png",
+
+                        (loadedTexture) => {
+
+                            texture =
+                                loadedTexture;
+
+                            resolve(
+                                loadedTexture
+                            );
+
+                        },
+
+                        undefined,
+
+                        (error) => {
+
+                            reject(error);
+
+                        }
+
+                    );
+
+                }
+            );
+
+        }
+
+
+        /*
+         * ==========================================
+         * 3D地形作成
+         * ==========================================
+         */
+
+        function createTerrain() {
+
+            const vertexCount =
+                GRID_SIZE *
+                GRID_SIZE;
+
+
+            /*
+             * 頂点座標
+             */
+
+            const positions =
+                new Float32Array(
+                    vertexCount * 3
+                );
+
+
+            /*
+             * UV
+             */
+
+            const uvs =
+                new Float32Array(
+                    vertexCount * 2
+                );
+
+
+            /*
+             * 地形の横幅
+             */
+
+            const SIZE = 20;
+
+
+            /*
+             * 頂点を作る
+             */
+
+            for (
+                let z = 0;
+                z < GRID_SIZE;
+                z++
+            ) {
+
+                for (
+                    let x = 0;
+                    x < GRID_SIZE;
+                    x++
+                ) {
+
+                    const index =
+                        z *
+                        GRID_SIZE +
+                        x;
+
+
+                    /*
+                     * X座標
+                     */
+
+                    const px =
+                        (
+                            x /
+                            (GRID_SIZE - 1)
+                            - 0.5
+                        ) * SIZE;
+
+
+                    /*
+                     * Z座標
+                     */
+
+                    const pz =
+                        (
+                            z /
+                            (GRID_SIZE - 1)
+                            - 0.5
+                        ) * SIZE;
+
+
+                    /*
+                     * DEMの高さ
+                     */
+
+                    const height =
+                        demData[index] *
+                        HEIGHT_SCALE;
+
+
+                    /*
+                     * 座標を保存
+                     */
+
+                    positions[
+                        index * 3
+                    ] = px;
+
+
+                    positions[
+                        index * 3 + 1
+                    ] = height;
+
+
+                    positions[
+                        index * 3 + 2
+                    ] = pz;
+
+
+                    /*
+                     * UV
+                     */
+
+                    uvs[
+                        index * 2
+                    ] =
+                        x /
+                        (GRID_SIZE - 1);
+
+
+                    uvs[
+                        index * 2 + 1
+                    ] =
+                        1 -
+                        z /
+                        (GRID_SIZE - 1);
+
+                }
+
+            }
+
+
+            /*
+             * ==================================
+             * 三角形を作る
+             * ==================================
+             */
+
+            const indices = [];
+
+
+            for (
+                let z = 0;
+                z < GRID_SIZE - 1;
+                z++
+            ) {
+
+                for (
+                    let x = 0;
+                    x < GRID_SIZE - 1;
+                    x++
+                ) {
+
+                    const a =
+                        z *
+                        GRID_SIZE +
+                        x;
+
+
+                    const b =
+                        z *
+                        GRID_SIZE +
+                        x + 1;
+
+
+                    const c =
+                        (z + 1) *
+                        GRID_SIZE +
+                        x;
+
+
+                    const d =
+                        (z + 1) *
+                        GRID_SIZE +
+                        x + 1;
+
+
+                    indices.push(
+                        a,
+                        b,
+                        d
+                    );
+
+
+                    indices.push(
+                        a,
+                        d,
+                        c
+                    );
+
+                }
+
+            }
+
+
+            /*
+             * ==================================
+             * Geometry
+             * ==================================
+             */
+
+            const geometry =
+                new THREE.BufferGeometry();
+
+
+            geometry.setAttribute(
+                "position",
+                new THREE.BufferAttribute(
+                    positions,
+                    3
+                )
+            );
+
+
+            geometry.setAttribute(
+                "uv",
+                new THREE.BufferAttribute(
+                    uvs,
+                    2
+                )
+            );
+
+
+            geometry.setIndex(
+                indices
+            );
+
+
+            geometry.computeVertexNormals();
+
+
+            /*
+             * ==================================
+             * Material
+             * ==================================
+             */
+
+            const material =
+                new THREE.MeshStandardMaterial({
+
+                    map: texture,
+
+                    roughness: 1.0,
+
+                    metalness: 0.0
+
+                });
+
+
+            /*
+             * ==================================
+             * Mesh
+             * ==================================
+             */
+
+            terrainMesh =
+                new THREE.Mesh(
+                    geometry,
+                    material
+                );
+
+
+            terrainGroup.add(
+                terrainMesh
+            );
+
+
+            /*
+             * 最初は斜め
+             */
+
+            terrainGroup.rotation.x =
+                THREE.MathUtils.degToRad(
+                    55
+                );
+
+        }
+
+
+        /*
+         * ==========================================
+         * ドラッグ操作
+         * ==========================================
+         */
+
+        let dragging = false;
+
+        let lastX = 0;
+
+        let lastY = 0;
+
+
+        /*
+         * 指を押した
+         */
+
+        renderer.domElement.addEventListener(
+            "pointerdown",
+            (event) => {
+
+                dragging = true;
+
+                lastX =
+                    event.clientX;
+
+                lastY =
+                    event.clientY;
+
+
+                renderer.domElement.setPointerCapture(
+                    event.pointerId
+                );
+
+            }
+        );
+
+
+        /*
+         * 指を動かした
+         */
+
+        renderer.domElement.addEventListener(
+            "pointermove",
+            (event) => {
+
+                if (!dragging) {
+
+                    return;
+
+                }
+
+
+                const currentX =
+                    event.clientX;
+
+                const currentY =
+                    event.clientY;
+
+
+                const dx =
+                    currentX - lastX;
+
+                const dy =
+                    currentY - lastY;
+
+
+                /*
+                 * 左右
+                 * ↓
+                 * 横回転
+                 */
+
+                terrainGroup.rotation.y +=
+                    dx * 0.008;
+
+
+                /*
+                 * 上下
+                 * ↓
+                 * 縦回転
+                 */
+
+                terrainGroup.rotation.x -=
+                    dy * 0.008;
+
+
+                /*
+                 * 回転範囲
+                 */
+
+                terrainGroup.rotation.x =
+                    THREE.MathUtils.clamp(
+
+                        terrainGroup.rotation.x,
+
+                        THREE.MathUtils.degToRad(
+                            -85
+                        ),
+
+                        THREE.MathUtils.degToRad(
+                            85
+                        )
+
+                    );
+
+
+                lastX =
+                    currentX;
+
+                lastY =
+                    currentY;
+
+
+                /*
+                 * 真上か確認
+                 */
+
+                checkTopView();
+
+            }
+        );
+
+
+        /*
+         * 指を離した
+         */
+
+        renderer.domElement.addEventListener(
+            "pointerup",
+            (event) => {
+
+                dragging = false;
+
+
+                try {
+
+                    renderer.domElement.releasePointerCapture(
+                        event.pointerId
+                    );
+
+                } catch (e) {
+
+                }
+
+            }
+        );
+
+
+        /*
+         * キャンセル
+         */
+
+        renderer.domElement.addEventListener(
+            "pointercancel",
+            () => {
+
+                dragging = false;
+
+            }
+        );
+
+
+        /*
+         * ==========================================
+         * 真上判定
+         * ==========================================
+         */
+
+        let topViewCompleted = false;
+
+
+        function checkTopView() {
+
+            const rotationDegrees =
+                THREE.MathUtils.radToDeg(
+                    terrainGroup.rotation.x
+                );
+
+
+            /*
+             * ±8度以内なら真上
+             */
+
+            const isTop =
+                Math.abs(
+                    rotationDegrees
+                ) <= 8;
+
+
+            if (
+                isTop &&
+                !topViewCompleted
+            ) {
+
+                topViewCompleted = true;
+
+                showTopView();
+
+            }
+
+        }
+
+
+        /*
+         * ==========================================
+         * 真上になった
+         * ==========================================
+         */
+
+        function showTopView() {
+
+            /*
+             * 完全に真上
+             */
+
+            terrainGroup.rotation.x = 0;
+
+
+            /*
+             * 3D地形を薄くする
+             */
+
+            if (terrainMesh) {
+
+                terrainMesh.material.opacity =
+                    0.15;
+
+                terrainMesh.material.transparent =
+                    true;
+
+            }
+
+
+            /*
+             * 標高を表示
+             */
+
+            heightDisplay.style.display =
+                "block";
+
+
+            /*
+             * メッセージ変更
+             */
+
+            message.innerHTML =
+                "👀 真上から見ると……<br>" +
+                "山の高さを表す線が見えてきた！";
+
+
+            /*
+             * 等高線を描く
+             */
+
+            drawContour();
+
+
+            /*
+             * 等高線を表示
+             */
+
+            setTimeout(
+                () => {
+
+                    contourCanvas.style.display =
+                        "block";
+
+                },
+                500
+            );
+
+        }
+
+
+        /*
+         * ==========================================
+         * 等高線
+         *
+         * 現在は簡易的な表示
+         * ==========================================
+         */
+
+        function drawContour() {
+
+            const canvas =
+                contourCanvas;
+
+            const ctx =
+                canvas.getContext("2d");
+
+
+            const size = 600;
+
+
+            canvas.width =
+                size;
+
+            canvas.height =
+                size;
+
+
+            /*
+             * 背景
+             */
+
+            ctx.fillStyle =
+                "#f7f4ea";
+
+            ctx.fillRect(
+                0,
+                0,
+                size,
+                size
+            );
+
+
+            /*
+             * タイトル
+             */
+
+            ctx.fillStyle =
+                "#333";
+
+            ctx.font =
+                "bold 28px sans-serif";
+
+            ctx.textAlign =
+                "center";
+
+            ctx.fillText(
+                "由布岳",
+                size / 2,
+                45
+            );
+
+
+            /*
+             * 中心
+             */
+
+            const centerX =
+                size / 2;
+
+            const centerY =
+                size / 2 + 20;
+
+
+            /*
+             * 等高線
+             */
+
+            const levels = [
+
+                {
+                    radius: 230,
+                    label: "1000m"
+                },
+
+                {
+                    radius: 190,
+                    label: "1200m"
+                },
+
+                {
+                    radius: 150,
+                    label: "1400m"
+                },
+
+                {
+                    radius: 110,
+                    label: "1500m"
+                },
+
+                {
+                    radius: 70,
+                    label: "1550m"
+                }
+
+            ];
+
+
+            levels.forEach(
+                (level, index) => {
+
+                    ctx.beginPath();
+
+
+                    const points = 100;
+
+
+                    for (
+                        let i = 0;
+                        i <= points;
+                        i++
+                    ) {
+
+                        const angle =
+                            (
+                                i /
+                                points
+                            ) *
+                            Math.PI *
+                            2;
+
+
+                        /*
+                         * 少し歪ませる
+                         */
+
+                        const distortion =
+                            1 +
+                            0.08 *
+                            Math.sin(
+                                angle * 3 +
+                                index
+                            );
+
+
+                        const x =
+                            centerX +
+                            Math.cos(angle) *
+                            level.radius *
+                            distortion;
+
+
+                        const y =
+                            centerY +
+                            Math.sin(angle) *
+                            level.radius *
+                            distortion *
+                            0.85;
+
+
+                        if (i === 0) {
+
+                            ctx.moveTo(
+                                x,
+                                y
+                            );
+
+                        } else {
+
+                            ctx.lineTo(
+                                x,
+                                y
+                            );
+
+                        }
+
+                    }
+
+
+                    ctx.closePath();
+
+
+                    /*
+                     * 線
+                     */
+
+                    ctx.strokeStyle =
+                        "#555";
+
+                    ctx.lineWidth =
+                        3;
+
+                    ctx.stroke();
+
+
+                    /*
+                     * 高さ
+                     */
+
+                    ctx.font =
+                        "18px sans-serif";
+
+                    ctx.fillStyle =
+                        "#333";
+
+                    ctx.textAlign =
+                        "left";
+
+
+                    ctx.fillText(
+                        level.label,
+                        centerX +
+                        level.radius *
+                        0.65,
+                        centerY
+                    );
+
+                }
+            );
+
+
+            /*
+             * 山頂
+             */
+
+            ctx.beginPath();
+
+            ctx.arc(
+                centerX,
+                centerY,
+                8,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                "#333";
+
+            ctx.fill();
+
+
+            /*
+             * 標高
+             */
+
+            ctx.textAlign =
+                "center";
+
+            ctx.font =
+                "bold 24px sans-serif";
+
+            ctx.fillText(
+                "標高 1,583m",
+                centerX,
+                size - 55
+            );
+
+        }
+
+
+        /*
+         * ==========================================
+         * 画面サイズ変更
+         * ==========================================
+         */
+
+        window.addEventListener(
+            "resize",
+            () => {
+
+                camera.aspect =
+                    window.innerWidth /
+                    window.innerHeight;
+
+
+                camera.updateProjectionMatrix();
+
+
+                renderer.setSize(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+
+            }
+        );
+
+
+        /*
+         * ==========================================
+         * アニメーション
+         * ==========================================
+         */
+
+        function animate() {
+
+            requestAnimationFrame(
+                animate
+            );
+
+
+            renderer.render(
+                scene,
+                camera
+            );
+
+        }
+
+
+        /*
+         * ==========================================
+         * 起動
+         * ==========================================
+         */
+
+        async function start() {
+
+            try {
+
+                /*
+                 * DEM
+                 */
+
+                await loadDEM();
+
+
+                /*
+                 * テクスチャ
+                 */
+
+                await loadTexture();
+
+
+                /*
+                 * 3D地形
+                 */
+
+                createTerrain();
+
+
+                /*
+                 * 読み込み完了
+                 */
+
+                loading.style.display =
+                    "none";
+
+
+                /*
+                 * 描画開始
+                 */
+
+                animate();
+
+
+                console.log(
+                    "由布岳3D読み込み完了"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                loading.style.display =
+                    "none";
+
+
+                errorBox.style.display =
+                    "block";
+
+            }
+
+        }
+
+
+        /*
+         * ==========================================
+         * 実行
+         * ==========================================
+         */
+
+        start();
+
+    </script>
+
+</body>
+
+</html>

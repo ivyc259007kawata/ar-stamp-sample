@@ -1,100 +1,746 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 
 <head>
+
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>スタンプ一覧</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>スタンプカード</title>
+
+
+    <style>
+        /* =============================
+       全体
+    ============================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+            padding: 0;
+
+            min-height: 100vh;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Noto Sans JP",
+                sans-serif;
+
+            background: #f5f3f0;
+
+            color: #333;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =============================
+       ページ全体
+    ============================== */
+
+        .stamp-page {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            padding:
+                30px 20px 40px;
+        }
+
+
+        /* =============================
+       タイトル
+    ============================== */
+
+        .stamp-page h1 {
+
+            margin:
+                10px 0 25px;
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #4a4a4a;
+
+            text-align: center;
+
+            position: relative;
+
+            z-index: 5;
+        }
+
+
+        /* =============================
+       スタンプカード画像
+    ============================== */
+
+        .image-wrap {
+
+            width: 100%;
+
+            max-width: 700px;
+
+            display: flex;
+
+            justify-content: center;
+
+            position: relative;
+
+            z-index: 5;
+        }
+
+
+        .image-wrap img {
+
+            display: block;
+
+            width: 100%;
+
+            max-width: 700px;
+
+            height: auto;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* =============================
+       メッセージ
+    ============================== */
+
+        #detailText {
+
+            margin:
+                20px 0 25px;
+
+            font-size: 18px;
+
+            line-height: 1.6;
+
+            text-align: center;
+
+            position: relative;
+
+            z-index: 5;
+        }
+
+
+        /* =============================
+       コンプリートメッセージ
+    ============================== */
+
+        #completeMessage {
+
+            display: none;
+
+            margin:
+                5px 0 25px;
+
+            padding:
+                18px 24px;
+
+            width: 100%;
+
+            max-width: 600px;
+
+            border-radius: 18px;
+
+            background: #ffffff;
+
+            text-align: center;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.10);
+
+            position: relative;
+
+            z-index: 5;
+        }
+
+
+        #completeMessage h2 {
+
+            margin:
+                0 0 10px;
+
+            font-size: 26px;
+
+            color: #e58a2b;
+        }
+
+
+        #completeMessage p {
+
+            margin: 0;
+
+            font-size: 18px;
+
+            line-height: 1.8;
+
+            font-weight: bold;
+
+            color: #444;
+        }
+
+
+        /* =============================
+       戻るボタン
+    ============================== */
+
+        #backButton {
+
+            width: 90%;
+
+            max-width: 360px;
+
+            padding:
+                16px 20px;
+
+            border: none;
+
+            border-radius: 999px;
+
+            background: #ffffff;
+
+            color: #333;
+
+            font-size: 19px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 3px 10px rgba(0, 0, 0, 0.12);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.1s,
+                box-shadow 0.1s;
+
+            position: relative;
+
+            z-index: 5;
+        }
+
+
+        /* =============================
+       ボタンを押したとき
+    ============================== */
+
+        #backButton:active {
+
+            transform:
+                scale(0.96);
+
+            box-shadow:
+                0 2px 5px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* =============================
+       紙吹雪
+    ============================== */
+
+        #confetti {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            pointer-events: none;
+
+            overflow: hidden;
+
+            z-index: 10;
+        }
+
+
+        .confetti-piece {
+
+            position: absolute;
+
+            top: -20px;
+
+            width: 9px;
+            height: 15px;
+
+            opacity: 0.9;
+
+            animation:
+                confettiFall linear forwards;
+        }
+
+
+        @keyframes confettiFall {
+
+            0% {
+
+                transform:
+                    translate3d(0, -20px, 0) rotate(0deg);
+
+                opacity: 1;
+            }
+
+
+            100% {
+
+                transform:
+                    translate3d(var(--move-x), 110vh, 0) rotate(var(--rotate));
+
+                opacity: 0.8;
+            }
+        }
+
+
+        /* =============================
+       スマートフォン・iPad向け
+    ============================== */
+
+        @media (max-width: 600px) {
+
+            .stamp-page {
+
+                padding:
+                    25px 15px 35px;
+            }
+
+
+            .stamp-page h1 {
+
+                font-size: 24px;
+
+                margin-bottom: 20px;
+            }
+
+
+            #detailText {
+
+                font-size: 16px;
+            }
+
+
+            #completeMessage {
+
+                padding:
+                    16px 18px;
+            }
+
+
+            #completeMessage h2 {
+
+                font-size: 24px;
+            }
+
+
+            #completeMessage p {
+
+                font-size: 16px;
+            }
+
+
+            #backButton {
+
+                font-size: 18px;
+
+                padding: 15px;
+            }
+        }
+    </style>
+    ```
+
 </head>
 
 <body>
 
-    <main>
+    ```
+    <!-- =============================
+     紙吹雪
+============================== -->
 
-        <div class="card">
+    <div id="confetti"></div>
 
-            <h1>スタンプ一覧</h1>
 
-            <p id="stampProgress"></p>
+    <!-- =============================
+     スタンプページ
+============================== -->
 
-            <div id="stampList"></div>
+    <div class="stamp-page">
+
+
+        <!-- =============================
+         タイトル
+    ============================== -->
+
+        <h1>
+            🎫 スタンプカード
+        </h1>
+
+
+        <!-- =============================
+         スタンプカード画像
+    ============================== -->
+
+        <div class="image-wrap">
+
+            <img id="stampImage" src="StampCard0.png" alt="スタンプカード">
 
         </div>
 
-    </main>
 
-    <footer class="footer">
-        <a href="map.html">地図</a>
-        <a href="index.html">ホーム</a>
-        <a href="stamp.html">スタンプ</a>
-    </footer>
+        <!-- =============================
+         通常メッセージ
+    ============================== -->
+
+        <p id="detailText"></p>
+
+
+        <!-- =============================
+         コンプリートメッセージ
+    ============================== -->
+
+        <div id="completeMessage">
+
+            <h2>
+                🎉 おめでとう！
+            </h2>
+
+            <p>
+                会場に戻って先生に<br>
+                この画面をみせてね！
+            </p>
+
+        </div>
+
+
+        <!-- =============================
+         戻るボタン
+    ============================== -->
+
+        <button id="backButton" type="button">
+
+            ← 戻る
+
+        </button>
+
+
+    </div>
+
+
+    <!-- =============================
+     StampApp
+============================== -->
+
+    <script src="app.js"></script>
+
 
     <script>
 
-        const SPOTS = [
-            { id: 'jinja', label: '🏯 神社' },
-            { id: 'park', label: '🌸 公園' },
-            { id: 'libra', label: '📚 図書館' }
-        ];
 
-        const stampList =
-            document.getElementById('stampList');
+        /* =============================
+           現在のクリア状況
+        ============================= */
 
-        // スタンプ一覧表示
-        SPOTS.forEach(({ id, label }) => {
+        const progress =
+            StampApp.getProgress();
 
-            const clear =
-                localStorage.getItem(id);
 
-            const div =
-                document.createElement('div');
+        /* =============================
+           どのスポットから来たか
+        ============================== */
 
-            div.className = "spot";
+        const spot =
+            new URLSearchParams(location.search)
+                .get("spot");
 
-            div.innerHTML = `
-                <div>${label}</div>
-                <div>
-                    ${clear ? '✔取得済み' : '未取得'}
-                </div>
-            `;
 
-            stampList.appendChild(div);
+        /* =============================
+           スタンプカード番号
+        ============================== */
 
-        });
+        const cardNumber =
+            StampApp.getStampCardNumber();
 
-        // 取得数表示
-        const clearCount =
-            SPOTS.filter(
-                ({ id }) => localStorage.getItem(id)
-            ).length;
 
-        document.getElementById("stampProgress")
+        /* =============================
+           スタンプカード画像
+        ============================== */
+
+        document
+            .getElementById("stampImage")
+            .src =
+            `StampCard${cardNumber}.png`;
+
+
+        /* =============================
+           スポット名
+        ============================== */
+
+        const spotNames = {
+
+            shrine: "神社",
+
+            park: "公園",
+
+            library: "図書館"
+
+        };
+
+
+        /* =============================
+           通常メッセージ
+        ============================== */
+
+        document
+            .getElementById("detailText")
             .textContent =
-            `取得数 ${clearCount}/${SPOTS.length}`;
 
-        // コンプリート判定
-        const complete =
-            SPOTS.every(
-                ({ id }) => localStorage.getItem(id)
-            );
+            spot
 
-        if (complete) {
+                ? `${spotNames[spot] || spot}のスタンプをゲットしました！`
 
-            const msg =
-                document.createElement("div");
+                : "スタンプカード";
 
-            msg.className = "complete";
 
-            msg.innerHTML = `
-                <h2>🎉コンプリート！🎉</h2>
-                <p>スタッフへ画面をお見せください</p>
-            `;
+        /* =============================
+           コンプリート判定
+        ============================== */
 
-            stampList.appendChild(msg);
+        if (cardNumber === 7) {
+
+
+            /* =============================
+               通常メッセージを変更
+            ============================== */
+
+            document
+                .getElementById("detailText")
+                .textContent =
+                "3つのスタンプを全部集めたよ！";
+
+
+            /* =============================
+               コンプリートメッセージ表示
+            ============================== */
+
+            document
+                .getElementById("completeMessage")
+                .style.display =
+                "block";
+
+
+            /* =============================
+               紙吹雪開始
+            ============================== */
+
+            createConfetti();
+
         }
 
+
+        /* =============================
+           紙吹雪を作る
+        ============================== */
+
+        function createConfetti() {
+
+            const container =
+                document.getElementById("confetti");
+
+
+            const pieces = 90;
+
+
+            for (
+                let i = 0;
+                i < pieces;
+                i++
+            ) {
+
+                const piece =
+                    document.createElement("div");
+
+
+                piece.className =
+                    "confetti-piece";
+
+
+                /* =============================
+                   横位置
+                ============================== */
+
+                piece.style.left =
+                    Math.random() * 100 + "%";
+
+
+                /* =============================
+                   大きさ
+                ============================== */
+
+                const size =
+                    6 +
+                    Math.random() * 7;
+
+
+                piece.style.width =
+                    size + "px";
+
+
+                piece.style.height =
+                    size * 1.5 + "px";
+
+
+                /* =============================
+                   ランダムな色
+                ============================== */
+
+                const colors = [
+
+                    "#ff6b6b",
+
+                    "#ffd166",
+
+                    "#6ecb77",
+
+                    "#5dade2",
+
+                    "#c77dff",
+
+                    "#ff9f43"
+
+                ];
+
+
+                piece.style.background =
+                    colors[
+                    Math.floor(
+                        Math.random() *
+                        colors.length
+                    )
+                    ];
+
+
+                /* =============================
+                   落下時間
+                ============================== */
+
+                const duration =
+                    2.5 +
+                    Math.random() * 2;
+
+
+                piece.style.animationDuration =
+                    duration + "s";
+
+
+                /* =============================
+                   横方向への移動
+                ============================== */
+
+                const moveX =
+                    (Math.random() - 0.5) *
+                    300;
+
+
+                piece.style
+                    .setProperty(
+                        "--move-x",
+                        moveX + "px"
+                    );
+
+
+                /* =============================
+                   回転
+                ============================== */
+
+                const rotate =
+                    360 +
+                    Math.random() * 720;
+
+
+                piece.style
+                    .setProperty(
+                        "--rotate",
+                        rotate + "deg"
+                    );
+
+
+                /* =============================
+                   開始タイミング
+                ============================== */
+
+                piece.style.animationDelay =
+                    Math.random() * 1.5 + "s";
+
+
+                container.appendChild(piece);
+
+            }
+
+        }
+
+
+        /* =============================
+           確認用
+        ============================== */
+
+        console.log(
+            "現在の進捗:",
+            progress
+        );
+
+
+        console.log(
+            "スタンプ数:",
+            StampApp.getStampCount()
+        );
+
+
+        console.log(
+            "カード番号:",
+            cardNumber
+        );
+
+
+        /* =============================
+           戻るボタン
+        ============================== */
+
+        document
+            .getElementById("backButton")
+            .addEventListener(
+                "click",
+                () => {
+
+                    location.href =
+                        "index.html";
+
+                }
+            );
+
     </script>
+
 
 </body>
 

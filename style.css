@@ -1,0 +1,865 @@
+@import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+    --ink: #34423c;
+    --muted: #78847d;
+    --green: #5c9878;
+    --green-dark: #3f765b;
+    --cream: #fbf8ef;
+    --paper: #ffffff;
+    --line: #e9e8dc;
+    --orange: #e7a35e;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--cream);
+    font-family: "Nunito", "Kiwi Maru", sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.site-header {
+    height: 70px;
+    padding: 0 max(5%, calc((100% - 1100px) / 2));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fffefa;
+    border-bottom: 1px solid var(--line);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.logo-icon {
+    font-size: 25px;
+}
+
+.header-stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 15px;
+    border: 1px solid #d9e5d9;
+    border-radius: 30px;
+    background: #f2f7ee;
+    color: var(--green-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+main {
+    width: min(100% - 36px, 1050px);
+    margin: 0 auto;
+}
+
+.hero {
+    position: relative;
+    display: flex;
+    min-height: 330px;
+    margin-top: 30px;
+    overflow: hidden;
+    border-radius: 26px;
+    background: #e8f0df;
+}
+
+.hero-content {
+    z-index: 2;
+    width: 58%;
+    padding: 42px 0 38px 48px;
+}
+
+.hero-label,
+.section-label {
+    margin: 0 0 8px;
+    color: var(--green-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.hero h1 {
+    margin: 0;
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: clamp(27px, 4vw, 39px);
+    line-height: 1.55;
+    letter-spacing: 1px;
+}
+
+.hero h1 span {
+    color: var(--green-dark);
+}
+
+.hero-description {
+    margin: 12px 0 20px;
+    color: #65756a;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 19px;
+    border-radius: 30px;
+    background: var(--green);
+    color: white;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 4px 0 #46795f;
+    transition: transform .2s, background .2s;
+}
+
+.hero-button:hover {
+    transform: translateY(-2px);
+    background: var(--green-dark);
+}
+
+.hero-illustration {
+    position: absolute;
+    inset: 0 0 0 48%;
+    overflow: hidden;
+}
+
+.sun {
+    position: absolute;
+    top: 35px;
+    right: 55px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #f5cf79;
+}
+
+.cloud {
+    position: absolute;
+    width: 80px;
+    height: 23px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, .8);
+}
+
+.cloud::before,
+.cloud::after {
+    position: absolute;
+    content: "";
+    bottom: 6px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: inherit;
+}
+
+.cloud::before {
+    left: 13px;
+}
+
+.cloud::after {
+    right: 13px;
+}
+
+.cloud-one {
+    top: 80px;
+    left: 20px;
+}
+
+.cloud-two {
+    top: 125px;
+    right: 5px;
+    transform: scale(.7);
+}
+
+.hill {
+    position: absolute;
+    bottom: -75px;
+    width: 120%;
+    height: 170px;
+    border-radius: 50% 50% 0 0;
+}
+
+.hill-back {
+    left: -20px;
+    background: #bed7ad;
+    transform: rotate(-9deg);
+}
+
+.hill-front {
+    left: 60px;
+    bottom: -105px;
+    background: #91bb91;
+    transform: rotate(9deg);
+}
+
+.hero-character {
+    position: absolute;
+    z-index: 2;
+    right: 29%;
+    bottom: 45px;
+    font-size: clamp(65px, 9vw, 105px);
+    filter: drop-shadow(0 7px 2px rgba(50, 80, 50, .12));
+}
+
+.sparkle {
+    position: absolute;
+    z-index: 2;
+    color: #e7ad48;
+    font-size: 26px;
+}
+
+.sparkle-one {
+    top: 90px;
+    right: 37%;
+}
+
+.sparkle-two {
+    top: 165px;
+    right: 15%;
+}
+
+.sparkle-three {
+    bottom: 105px;
+    left: 23%;
+}
+
+.progress-section,
+.spots-section,
+.howto-section {
+    margin-top: 45px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.section-heading h2,
+.howto-section h2 {
+    margin: 0;
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 21px;
+}
+
+.progress-count {
+    color: var(--green-dark);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.progress-track {
+    height: 12px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #e7e8dd;
+}
+
+.progress-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #75a985;
+    transition: width .4s ease;
+}
+
+.progress-message {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* =============================
+   スタンプコンプリート表示
+============================= */
+
+.complete-home-message {
+
+    display: none;
+
+    width: 100%;
+
+    margin-top: 18px;
+
+    padding: 16px 20px;
+
+    border: 1px solid #eadfbe;
+
+    border-radius: 18px;
+
+    background: #fffaf0;
+
+    box-shadow:
+        0 4px 12px rgba(59, 71, 54, 0.06);
+
+    align-items: center;
+
+    gap: 14px;
+
+    animation:
+        completeAppear 0.5s ease;
+}
+
+
+.complete-home-icon {
+
+    width: 48px;
+
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #fff;
+
+    font-size: 27px;
+
+    box-shadow:
+        0 2px 7px rgba(59, 71, 54, 0.08);
+}
+
+
+.complete-home-message h3 {
+
+    margin: 0 0 5px;
+
+    font-family:
+        "Kiwi Maru",
+        sans-serif;
+
+    font-size: 17px;
+
+    color: #c98235;
+}
+
+
+.complete-home-message p {
+
+    margin: 0;
+
+    color: #788078;
+
+    font-size: 11px;
+
+    line-height: 1.7;
+}
+
+
+/* =============================
+   表示アニメーション
+============================= */
+
+@keyframes completeAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* =============================
+   コンプリート時の
+   スタンプカード案内
+============================= */
+
+.stamp-banner.complete {
+
+    border-color: #e3cf9f;
+
+    background: #fff7df;
+
+    box-shadow:
+        0 6px 20px rgba(59, 71, 54, 0.08);
+}
+
+
+.stamp-banner.complete .stamp-banner-icon {
+
+    animation:
+        stampCompleteIcon 1.2s ease infinite alternate;
+}
+
+
+@keyframes stampCompleteIcon {
+
+    from {
+
+        transform:
+            translateY(0) rotate(-4deg);
+    }
+
+    to {
+
+        transform:
+            translateY(-3px) rotate(4deg);
+    }
+
+}
+
+.spot-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+}
+
+.spot-card {
+    overflow: hidden;
+    border: 1px solid #ece9df;
+    border-radius: 18px;
+    background: var(--paper);
+    box-shadow: 0 5px 18px rgba(59, 71, 54, .045);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.spot-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(59, 71, 54, .09);
+}
+
+.spot-visual {
+    position: relative;
+    display: grid;
+    height: 145px;
+    place-items: center;
+    overflow: hidden;
+}
+
+.shrine-visual {
+    background: #f5e9dc;
+}
+
+.park-visual {
+    background: #e5efdc;
+}
+
+.library-visual {
+    background: #e6e9f3;
+}
+
+.spot-emoji {
+    z-index: 1;
+    font-size: 65px;
+    filter: drop-shadow(0 5px 2px rgba(0, 0, 0, .08));
+}
+
+.spot-number {
+    position: absolute;
+    top: 12px;
+    left: 13px;
+    color: rgba(52, 66, 60, .55);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.visual-decoration {
+    position: absolute;
+    right: 19px;
+    bottom: 12px;
+    color: rgba(255, 255, 255, .85);
+    font-size: 35px;
+}
+
+.spot-content {
+    padding: 17px;
+}
+
+.spot-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.spot-category {
+    color: #98a098;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.status-badge {
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #f1f1eb;
+    color: #858b83;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.status-badge.cleared {
+    background: #e4f3e5;
+    color: #39794f;
+}
+
+.spot-content h3 {
+    margin: 12px 0 7px;
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 17px;
+}
+
+.spot-content p {
+    min-height: 57px;
+    margin: 0 0 16px;
+    color: #788078;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.spot-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 13px;
+    border: 1px solid #d7e6d7;
+    border-radius: 10px;
+    background: #f3f8f0;
+    color: var(--green-dark);
+    font-size: 12px;
+    font-weight: 800;
+    transition: background .2s;
+}
+
+.spot-button:hover {
+    background: #e4f0df;
+}
+
+.spot-button.cleared-button {
+    border-color: #b6d8bb;
+    background: #eaf5e9;
+}
+
+.button-arrow {
+    font-size: 17px;
+}
+
+.stamp-banner {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    margin-top: 35px;
+    padding: 22px 25px;
+    border: 1px solid #eadfbe;
+    border-radius: 17px;
+    background: #fff7df;
+}
+
+.stamp-banner-icon {
+    font-size: 36px;
+}
+
+.stamp-banner-text {
+    flex: 1;
+}
+
+.stamp-banner-text h2 {
+    margin: 0 0 5px;
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 15px;
+}
+
+.stamp-banner-text p {
+    margin: 0;
+    color: #8a806a;
+    font-size: 11px;
+}
+
+.stamp-banner-button {
+    padding: 11px 15px;
+    border-radius: 30px;
+    background: #e5ae56;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.howto-section {
+    margin-bottom: 50px;
+}
+
+.howto-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+    margin-top: 17px;
+}
+
+.howto-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 17px 13px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: #fffefa;
+}
+
+.howto-icon {
+    font-size: 24px;
+}
+
+.howto-item h3 {
+    margin: 0 0 6px;
+    font-size: 12px;
+}
+
+.howto-item p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.site-footer {
+    padding: 23px 15px;
+    background: #e9eddf;
+    text-align: center;
+}
+
+.site-footer p {
+    margin: 0 0 5px;
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 12px;
+}
+
+.site-footer small {
+    color: #879084;
+    font-size: 10px;
+}
+
+@media (max-width: 720px) {
+    .hero {
+        min-height: 300px;
+    }
+
+    .hero-content {
+        width: 70%;
+        padding: 32px 0 30px 25px;
+    }
+
+    .hero-illustration {
+        left: 45%;
+    }
+
+    .hero-character {
+        right: 15%;
+        bottom: 38px;
+    }
+
+    .spot-list {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    .spot-card {
+        display: grid;
+        grid-template-columns: 115px minmax(0, 1fr);
+    }
+
+    .spot-visual {
+        height: 100%;
+        min-height: 180px;
+    }
+
+    .spot-emoji {
+        font-size: 48px;
+    }
+
+    .spot-content {
+        padding: 14px;
+    }
+
+    .spot-content h3 {
+        font-size: 15px;
+    }
+
+    .spot-content p {
+        min-height: auto;
+        margin-bottom: 12px;
+    }
+
+    .howto-list {
+        grid-template-columns: 1fr;
+    }
+
+    .howto-item {
+        align-items: center;
+    }
+}
+
+@media (max-width: 430px) {
+    main {
+        width: calc(100% - 24px);
+    }
+
+    .site-header {
+        height: 60px;
+        padding: 0 13px;
+    }
+
+    .logo {
+        font-size: 15px;
+    }
+
+    .header-stamp {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .hero {
+        min-height: 280px;
+        margin-top: 15px;
+        border-radius: 18px;
+    }
+
+    .hero-content {
+        width: 78%;
+        padding: 27px 0 25px 18px;
+    }
+
+    .hero h1 {
+        font-size: 25px;
+    }
+
+    .hero-description {
+        font-size: 11px;
+    }
+
+    .hero-illustration {
+        left: 42%;
+    }
+
+    .hero-character {
+        right: 6%;
+        bottom: 35px;
+        font-size: 65px;
+    }
+
+    .sun {
+        right: 13px;
+        width: 48px;
+        height: 48px;
+    }
+
+    .section-heading h2,
+    .howto-section h2 {
+        font-size: 18px;
+    }
+
+    .progress-section,
+    .spots-section,
+    .howto-section {
+        margin-top: 32px;
+    }
+
+    .spot-card {
+        grid-template-columns: 95px minmax(0, 1fr);
+    }
+
+    .spot-visual {
+        min-height: 190px;
+    }
+
+    .spot-content {
+        padding: 12px 10px;
+    }
+
+    .spot-content h3 {
+        font-size: 14px;
+    }
+
+    .spot-content p {
+        font-size: 10px;
+    }
+
+    .status-badge {
+        padding: 4px 7px;
+        font-size: 9px;
+    }
+
+    .stamp-banner {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 17px;
+    }
+
+    .stamp-banner-text {
+        min-width: 65%;
+    }
+
+    .stamp-banner-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .complete-home-message {
+
+        padding: 14px 15px;
+
+        gap: 10px;
+    }
+
+
+    .complete-home-icon {
+
+        width: 42px;
+
+        height: 42px;
+
+        font-size: 23px;
+    }
+
+
+    .complete-home-message h3 {
+
+        font-size: 15px;
+    }
+
+
+    .complete-home-message p {
+
+        font-size: 10px;
+    }
+}

@@ -1,221 +1,246 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARスタンプラリー</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>ふしぎ発見！ARスタンプラリー</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <header class="site-header">
+        <a href="index.html" class="logo">
+            <span class="logo-icon">🔍</span>
+            <span>ふしぎ発見！</span>
+        </a>
 
-    <header class="hero">
-        <img src="img/yuhuko.jpg" alt="学校写真">
+        <a href="stamp.html" class="header-stamp">
+            <span>🎖️</span>
+            スタンプカード
+        </a>
     </header>
 
     <main>
-        <div class="card">
+        <!-- メインビジュアル -->
+        <section class="hero">
+            <div class="hero-content">
+                <p class="hero-label">AR MYSTERY STAMP RALLY</p>
+                <h1>
+                    まちのふしぎを<br>
+                    <span>見つけに行こう！</span>
+                </h1>
+                <p class="hero-description">
+                    カメラをかざして、謎を解こう！<br>
+                    3つのスポットをめぐってスタンプを集めよう。
+                </p>
 
-            <h1>ARスタンプラリー</h1>
-
-            <p id="progress"></p>
-
-            <div id="spotList"></div>
-
-            <!-- にんじん収穫ミニゲーム -->
-            <div class="mini-game">
-                <div>
-                    🥕 にんじん収穫
-
-                    <span id="carrotStatus"></span>
-                </div>
-
-                <a class="btn" href="ar.html">
-                    収穫する
+                <a href="#spots" class="hero-button">
+                    冒険をはじめる
+                    <span>↓</span>
                 </a>
             </div>
 
-            <!-- 霧を晴らす -->
-            <div class="mini-game">
+            <div class="hero-illustration" aria-hidden="true">
+                <div class="sun"></div>
+                <div class="cloud cloud-one"></div>
+                <div class="cloud cloud-two"></div>
+                <div class="hill hill-back"></div>
+                <div class="hill hill-front"></div>
+                <div class="hero-character">🐿️</div>
+                <div class="sparkle sparkle-one">✦</div>
+                <div class="sparkle sparkle-two">✧</div>
+                <div class="sparkle sparkle-three">✦</div>
+            </div>
+        </section>
 
+        <!-- 進捗 -->
+        <section class="progress-section" aria-labelledby="progress-title">
+            <div class="section-heading">
                 <div>
-                    🌫️ 霧を晴らす
-
-                    <span id="mistStatus"></span>
+                    <p class="section-label">YOUR PROGRESS</p>
+                    <h2 id="progress-title">冒険の記録</h2>
                 </div>
-
-                <a class="btn" href="mist.html" id="mistButton">
-
-                    挑戦する
-
-                </a>
-
+                <span class="progress-count" id="progressCount">0 / 3</span>
             </div>
 
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
 
+            <p class="progress-message" id="progressMessage">
+                さあ、最初の謎に挑戦しよう！
+            </p>
 
-            <div id="debugArea"></div>
+            <!-- コンプリート時だけ表示 -->
+            <div id="completeHomeMessage" class="complete-home-message">
 
-        </div>
+                <div class="complete-home-icon">
+                    🎉
+                </div>
+
+                <div>
+                    <h3>スタンプコンプリート！</h3>
+
+                    <p>
+                        3つのふしぎを全部見つけたよ！<br>
+                        先生にスタンプカードを見せに行こう！
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- スポット一覧 -->
+        <section class="spots-section" id="spots">
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">MYSTERY SPOTS</p>
+                    <h2>冒険する場所を選ぼう</h2>
+                </div>
+            </div>
+
+            <div class="spot-list">
+                <!-- 神社 -->
+                <article class="spot-card" data-spot="shrine">
+                    <div class="spot-visual shrine-visual">
+                        <span class="spot-number">01</span>
+                        <span class="spot-emoji">⛩️</span>
+                        <span class="visual-decoration">✦</span>
+                    </div>
+
+                    <div class="spot-content">
+                        <div class="spot-topline">
+                            <span class="spot-category">SPOT 01</span>
+                            <span class="status-badge" id="status-shrine">
+                                未クリア
+                            </span>
+                        </div>
+
+                        <h3>神社のふしぎ</h3>
+                        <p>
+                            神社にかくされた謎を解き明かそう！
+                            不思議な出来事が待っているかも？
+                        </p>
+
+                        <a href="ar.html?spot=shrine" class="spot-button">
+                            <span class="button-text">冒険に出発！</span>
+                            <span class="button-arrow">→</span>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- 公園 -->
+                <article class="spot-card" data-spot="park">
+                    <div class="spot-visual park-visual">
+                        <span class="spot-number">02</span>
+                        <span class="spot-emoji">🌳</span>
+                        <span class="visual-decoration">✿</span>
+                    </div>
+
+                    <div class="spot-content">
+                        <div class="spot-topline">
+                            <span class="spot-category">SPOT 02</span>
+                            <span class="status-badge" id="status-park">
+                                未クリア
+                            </span>
+                        </div>
+
+                        <h3>公園のふしぎ</h3>
+                        <p>
+                            公園に眠る秘密を探そう！
+                            目をこらすと何かが見えるかも。
+                        </p>
+
+                        <a href="ar2.html?spot=park" class="spot-button">
+                            <span class="button-text">冒険に出発！</span>
+                            <span class="button-arrow">→</span>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- 図書館 -->
+                <article class="spot-card" data-spot="library">
+                    <div class="spot-visual library-visual">
+                        <span class="spot-number">03</span>
+                        <span class="spot-emoji">📚</span>
+                        <span class="visual-decoration">✧</span>
+                    </div>
+
+                    <div class="spot-content">
+                        <div class="spot-topline">
+                            <span class="spot-category">SPOT 03</span>
+                            <span class="status-badge" id="status-library">
+                                未クリア
+                            </span>
+                        </div>
+
+                        <h3>図書館のふしぎ</h3>
+                        <p>
+                            本の中にひそむ謎に挑戦！
+                            知恵を使って答えを見つけよう。
+                        </p>
+
+                        <a href="ar3.html?spot=library" class="spot-button">
+                            <span class="button-text">冒険に出発！</span>
+                            <span class="button-arrow">→</span>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- スタンプカードへの案内 -->
+        <section class="stamp-banner">
+            <div class="stamp-banner-icon">🎖️</div>
+            <div class="stamp-banner-text">
+                <h2>集めたスタンプを見てみよう！</h2>
+                <p>冒険の記録はスタンプカードに残るよ。</p>
+            </div>
+            <a href="stamp.html" class="stamp-banner-button">
+                カードを見る →
+            </a>
+        </section>
+
+        <section class="howto-section">
+            <p class="section-label">HOW TO PLAY</p>
+            <h2>遊び方</h2>
+
+            <div class="howto-list">
+                <div class="howto-item">
+                    <span class="howto-icon">📍</span>
+                    <div>
+                        <h3>1. スポットへ行こう</h3>
+                        <p>好きな場所を選んで、現地へ向かおう。</p>
+                    </div>
+                </div>
+
+                <div class="howto-item">
+                    <span class="howto-icon">📷</span>
+                    <div>
+                        <h3>2. カメラでARを読み取ろう</h3>
+                        <p>マーカーにカメラを向けて、謎解きを始めよう。</p>
+                    </div>
+                </div>
+
+                <div class="howto-item">
+                    <span class="howto-icon">🏆</span>
+                    <div>
+                        <h3>3. クリアしてスタンプゲット！</h3>
+                        <p>謎を解くとスタンプが押されるよ。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer class="footer">
-        <a href="map.html">地図</a>
-        <a href="index.html">ホーム</a>
-        <a href="stamp.html">スタンプ</a>
+    <footer class="site-footer">
+        <p>ふしぎ発見！ARスタンプラリー</p>
+        <small>冒険の記録を大切にしよう。</small>
     </footer>
 
-    <script>
-
-        // ★スポットを追加するときはここだけ編集
-        const SPOTS = [
-            { id: 'jinja', label: '🏯 神社' },
-            { id: 'park', label: '🌸 公園' },
-            { id: 'libra', label: '📚 図書館' },
-        ];
-
-        const spotList =
-            document.getElementById("spotList");
-
-        SPOTS.forEach(({ id, label }) => {
-
-            const cleared =
-                localStorage.getItem(id);
-
-            const div =
-                document.createElement('div');
-
-            div.className = 'spot';
-
-            div.innerHTML = `
-            <div>
-                ${label}
-                <span class="${cleared ? 'clear' : ''}">
-                    ${cleared ? '✔' : ''}
-                </span>
-            </div>
-
-            <a class="btn"
-                href="ar.html?spot=${id}">
-                ARを読む
-            </a>
-        `;
-
-            spotList.appendChild(div);
-
-        });
-
-        // 取得数表示
-        const clearCount =
-            SPOTS.filter(
-                ({ id }) => localStorage.getItem(id)
-            ).length;
-
-        document.getElementById("progress").textContent =
-            `スタンプ ${clearCount}/${SPOTS.length}`;
-
-        // デバッグボタン作成
-        const testBtn =
-            document.createElement("button");
-
-        testBtn.textContent =
-            "全取得";
-
-        testBtn.onclick = () => {
-
-            SPOTS.forEach(({ id }) =>
-                localStorage.setItem(id, "clear")
-            );
-
-            location.reload();
-        };
-
-        const resetBtn =
-            document.createElement("button");
-
-        resetBtn.textContent =
-            "リセット";
-
-        resetBtn.onclick = () => {
-
-            localStorage.clear();
-
-            location.reload();
-        };
-
-        // debugAreaへ追加
-        const debugArea =
-            document.getElementById("debugArea");
-
-        // =====================
-        // にんじん収穫
-        // =====================
-
-        const carrotStatus =
-            document.getElementById("carrotStatus");
-
-        const carrotClear =
-            localStorage.getItem("carrotHarvest");
-
-        if (carrotClear) {
-
-            carrotStatus.innerHTML = `
-        ✔ 収穫済み
-        <img src="img/判子アイコン3.png"
-                alt="取得済み"
-                style="width:40px; vertical-align:middle;">
-            `;
-
-        } else {
-
-            carrotStatus.textContent = "未収穫";
-
-        }
-
-        // =====================
-        // 霧を晴らす
-        // =====================
-
-        const mistStatus =
-            document.getElementById("mistStatus");
-
-        const mistButton =
-            document.getElementById("mistButton");
-
-        const mistClear =
-            localStorage.getItem("mistClear");
-
-
-        if (mistClear) {
-
-            mistStatus.innerHTML = `
-        ✔ クリア
-        <img
-            src="img/判子アイコン3.png"
-            alt="クリア"
-            style="
-                width:40px;
-                vertical-align:middle;
-            ">
-        `;
-
-            mistButton.textContent =
-                "クリア済み";
-
-        } else {
-
-            mistStatus.textContent =
-                "未クリア";
-
-        }
-
-        debugArea.appendChild(testBtn);
-        debugArea.appendChild(resetBtn);
-
-    </script>
-
+    <script src="app.js"></script>
+    <script src="main.js"></script>
 
 </body>
 

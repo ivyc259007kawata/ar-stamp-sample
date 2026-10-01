@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR謎解き サンプル⑥⑦⑧</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<style>
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #f5f3f0;
+        color: #333;
+    }
+
+    header {
+        padding: 14px;
+        text-align: center;
+        background: white;
+        border-bottom: 1px solid #ddd;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 20px;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 6px;
+        padding: 10px;
+        background: white;
+    }
+
+    .tabs button {
+        flex: 1;
+        padding: 10px 4px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background: #eee;
+        font-weight: bold;
+    }
+
+    .tabs button.active {
+        background: #ddd;
+    }
+
+    .game {
+        display: none;
+        padding: 16px;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .game.active {
+        display: block;
+    }
+
+    .instruction {
+        background: white;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+
+    .stage {
+        position: relative;
+        width: 100%;
+        height: 420px;
+        overflow: hidden;
+        border-radius: 14px;
+        background: #e8e6e3;
+        border: 2px solid #ccc;
+    }
+
+    .success {
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #e8f5e9;
+        color: #2e7d32;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* ⑥ リトマス紙 */
+    #hotSpring {
+        position: absolute;
+        left: 15%;
+        top: 52%;
+        width: 70%;
+        height: 30%;
+        border-radius: 50%;
+        background: #b9dbe5;
+        border: 5px solid #9abfc9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+    }
+
+    #litmus {
+        position: absolute;
+        left: 12%;
+        top: 15%;
+        width: 90px;
+        height: 30px;
+        border-radius: 6px;
+        background: #e8b7c6;
+        border: 2px solid #777;
+        cursor: grab;
+        touch-action: none;
+        z-index: 2;
+    }
+
+    #litmusText {
+        position: absolute;
+        left: 50%;
+        top: 5%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
+    /* ⑦ 並べ替え */
+    #logicStage {
+        padding: 20px;
+        background: #fff;
+    }
+
+    .slots, .characters {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 25px 0;
+    }
+
+    .slot, .character {
+        width: 70px;
+        height: 70px;
+        border: 2px solid #aaa;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+    }
+
+    .slot {
+        background: #f5f3f0;
+        font-size: 14px;
+    }
+
+    .character {
+        background: white;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .character.selected {
+        border: 4px solid #777;
+        transform: scale(1.05);
+    }
+
+    /* ⑧ 山 */
+    #mountainArea {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 700px;
+    }
+
+    #mountain {
+        width: 0;
+        height: 0;
+        border-left: 150px solid transparent;
+        border-right: 150px solid transparent;
+        border-bottom: 260px solid #8aa38d;
+        transform: rotateX(45deg);
+        transition: transform 0.5s;
+        cursor: pointer;
+    }
+
+    #contour {
+        position: absolute;
+        display: none;
+        width: 300px;
+        height: 220px;
+        border: 6px solid #777;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    #contour::before,
+    #contour::after {
+        content: "";
+        position: absolute;
+        border: 5px solid #777;
+        border-radius: 50%;
+    }
+
+    #contour::before {
+        inset: 28px;
+    }
+
+    #contour::after {
+        inset: 60px;
+    }
+
+    .hint {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>AR謎解き サンプル</h1>
+</header>
+
+<div class="tabs">
+    <button class="active" onclick="showGame(6, this)">⑥ 温泉</button>
+    <button onclick="showGame(7, this)">⑦ 論理思考</button>
+    <button onclick="showGame(8, this)">⑧ 等高線</button>
+</div>
+
+<!-- ⑥ -->
+<section id="game6" class="game active">
+    <div class="instruction">
+        <h2>⑥ 温泉のヒント</h2>
+        <p>🧪 リトマス試験紙を指で動かして、温泉に入れてみよう！</p>
+        <p class="hint">※まずはブラウザ上で操作を確認するサンプルです。</p>
+    </div>
+
+    <div class="stage" id="litmusStage">
+        <div id="litmusText">🧪 リトマス紙</div>
+        <div id="litmus"></div>
+        <div id="hotSpring">♨️</div>
+    </div>
+
+    <div id="result6"></div>
+</section>
+
+<!-- ⑦ -->
+<section id="game7" class="game">
+    <div class="instruction">
+        <h2>⑦ キャラクターを並べよう</h2>
+        <p>条件を読んで、正しい順番に並べてください。</p>
+        <ul>
+            <li>🐱 は一番左</li>
+            <li>🐶 は 🐱 のとなり</li>
+            <li>🦊 は一番右</li>
+        </ul>
+        <p class="hint">キャラクターを2つタップすると位置が入れ替わります。</p>
+    </div>
+
+    <div class="stage" id="logicStage">
+        <div class="slots">
+            <div class="slot">①</div>
+            <div class="slot">②</div>
+            <div class="slot">③</div>
+        </div>
+
+        <div class="characters" id="characters"></div>
+    </div>
+
+    <div id="result7"></div>
+</section>
+
+<!-- ⑧ -->
+<section id="game8" class="game">
+    <div class="instruction">
+        <h2>⑧ 山を上から見てみよう</h2>
+        <p>🗻 山をタップして、上から見える向きにしてみよう！</p>
+        <p class="hint">※スマホそのものの傾きではなく、3Dオブジェクトの向きを判定する想定です。</p>
+    </div>
+
+    <div class="stage">
+        <div id="mountainArea">
+            <div id="mountain" onclick="rotateMountain()"></div>
+            <div id="contour"></div>
+        </div>
+    </div>
+
+    <div id="result8"></div>
+</section>
+
+<script>
+    function showGame(number, button) {
+        document.querySelectorAll(".game").forEach(game => {
+            game.classList.remove("active");
+        });
+
+        document.querySelectorAll(".tabs button").forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+        document.getElementById("game" + number).classList.add("active");
+        button.classList.add("active");
+    }
+
+    // =========================
+    // ⑥ リトマス試験紙
+    // =========================
+    const litmus = document.getElementById("litmus");
+    const hotSpring = document.getElementById("hotSpring");
+    const litmusStage = document.getElementById("litmusStage");
+
+    let dragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    litmus.addEventListener("pointerdown", event => {
+        dragging = true;
+        litmus.setPointerCapture(event.pointerId);
+
+        const rect = litmus.getBoundingClientRect();
+
+        offsetX = event.clientX - rect.left;
+        offsetY = event.clientY - rect.top;
+    });
+
+    litmus.addEventListener("pointermove", event => {
+        if (!dragging) return;
+
+        const stageRect = litmusStage.getBoundingClientRect();
+
+        let x = event.clientX - stageRect.left - offsetX;
+        let y = event.clientY - stageRect.top - offsetY;
+
+        x = Math.max(0, Math.min(x, stageRect.width - litmus.offsetWidth));
+        y = Math.max(0, Math.min(y, stageRect.height - litmus.offsetHeight));
+
+        litmus.style.left = x + "px";
+        litmus.style.top = y + "px";
+    });
+
+    litmus.addEventListener("pointerup", checkLitmus);
+    litmus.addEventListener("pointercancel", checkLitmus);
+
+    function checkLitmus() {
+        if (!dragging) return;
+        dragging = false;
+
+        const litmusRect = litmus.getBoundingClientRect();
+        const springRect = hotSpring.getBoundingClientRect();
+
+        const centerX = litmusRect.left + litmusRect.width / 2;
+        const centerY = litmusRect.top + litmusRect.height / 2;
+
+        const inside =
+            centerX >= springRect.left &&
+            centerX <= springRect.right &&
+            centerY >= springRect.top &&
+            centerY <= springRect.bottom;
+
+        if (inside) {
+            litmus.style.background = "#9bb7e8";
+            litmus.style.pointerEvents = "none";
+
+            document.getElementById("result6").innerHTML =
+                '<div class="success">🎉 温泉に入った！ リトマス紙の色が変化した！<br>ヒント「7」を発見！</div>';
+        }
+    }
+
+    // =========================
+    // ⑦ 論理思考
+    // =========================
+    const characters = ["🦊", "🐱", "🐶"];
+    let selectedIndex = null;
+
+    function renderCharacters() {
+        const container = document.getElementById("characters");
+        container.innerHTML = "";
+
+        characters.forEach((character, index) => {
+            const div = document.createElement("div");
+            div.className = "character";
+            div.textContent = character;
+
+            div.onclick = () => selectCharacter(index, div);
+
+            container.appendChild(div);
+        });
+    }
+
+    function selectCharacter(index, element) {
+        const all = document.querySelectorAll(".character");
+
+        if (selectedIndex === null) {
+            selectedIndex = index;
+            element.classList.add("selected");
+            return;
+        }
+
+        [characters[selectedIndex], characters[index]] =
+            [characters[index], characters[selectedIndex]];
+
+        selectedIndex = null;
+        renderCharacters();
+        checkLogic();
+    }
+
+    function checkLogic() {
+        const answer = characters.join("");
+
+        if (answer === "🐱🐶🦊") {
+            document.getElementById("result7").innerHTML =
+                '<div class="success">🎉 正解！ キャラクターを正しく並べられた！</div>';
+        }
+    }
+
+    renderCharacters();
+
+    // =========================
+    // ⑧ 等高線
+    // =========================
+    let mountainStep = 0;
+
+    function rotateMountain() {
+        mountainStep++;
+
+        if (mountainStep === 1) {
+            document.getElementById("mountain").style.transform =
+                "rotateX(65deg)";
+        } else if (mountainStep === 2) {
+            document.getElementById("mountain").style.transform =
+                "rotateX(85deg)";
+        } else {
+            document.getElementById("mountain").style.display = "none";
+            document.getElementById("contour").style.display = "block";
+
+            document.getElementById("result8").innerHTML =
+                '<div class="success">🎉 上から見えた！ 等高線が現れた！</div>';
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARスタンプラリー</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="hero">
+        <img src="img/yuhuko.jpg" alt="学校写真">
+    </header>
+
+    <main>
+        <div class="card">
+
+            <h1>ARスタンプラリー</h1>
+
+            <p id="progress"></p>
+
+            <div id="spotList"></div>
+
+            <!-- にんじん収穫ミニゲーム -->
+            <div class="mini-game">
+                <div>
+                    🥕 にんじん収穫
+
+                    <span id="carrotStatus"></span>
+                </div>
+
+                <a class="btn" href="ar.html">
+                    収穫する
+                </a>
+            </div>
+
+            <!-- 霧を晴らす -->
+            <div class="mini-game">
+
+                <div>
+                    🌫️ 霧を晴らす
+
+                    <span id="mistStatus"></span>
+                </div>
+
+                <a class="btn" href="mist.html" id="mistButton">
+
+                    挑戦する
+
+                </a>
+
+            </div>
+
+
+
+            <div id="debugArea"></div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <a href="map.html">地図</a>
+        <a href="index.html">ホーム</a>
+        <a href="stamp.html">スタンプ</a>
+    </footer>
+
+    <script>
+
+        // ★スポットを追加するときはここだけ編集
+        const SPOTS = [
+            { id: 'jinja', label: '🏯 神社' },
+            { id: 'park', label: '🌸 公園' },
+            { id: 'libra', label: '📚 図書館' },
+        ];
+
+        const spotList =
+            document.getElementById("spotList");
+
+        SPOTS.forEach(({ id, label }) => {
+
+            const cleared =
+                localStorage.getItem(id);
+
+            const div =
+                document.createElement('div');
+
+            div.className = 'spot';
+
+            div.innerHTML = `
+            <div>
+                ${label}
+                <span class="${cleared ? 'clear' : ''}">
+                    ${cleared ? '✔' : ''}
+                </span>
+            </div>
+
+            <a class="btn"
+                href="ar.html?spot=${id}">
+                ARを読む
+            </a>
+        `;
+
+            spotList.appendChild(div);
+
+        });
+
+        // 取得数表示
+        const clearCount =
+            SPOTS.filter(
+                ({ id }) => localStorage.getItem(id)
+            ).length;
+
+        document.getElementById("progress").textContent =
+            `スタンプ ${clearCount}/${SPOTS.length}`;
+
+        // デバッグボタン作成
+        const testBtn =
+            document.createElement("button");
+
+        testBtn.textContent =
+            "全取得";
+
+        testBtn.onclick = () => {
+
+            SPOTS.forEach(({ id }) =>
+                localStorage.setItem(id, "clear")
+            );
+
+            location.reload();
+        };
+
+        const resetBtn =
+            document.createElement("button");
+
+        resetBtn.textContent =
+            "リセット";
+
+        resetBtn.onclick = () => {
+
+            localStorage.clear();
+
+            location.reload();
+        };
+
+        // debugAreaへ追加
+        const debugArea =
+            document.getElementById("debugArea");
+
+        // =====================
+        // にんじん収穫
+        // =====================
+
+        const carrotStatus =
+            document.getElementById("carrotStatus");
+
+        const carrotClear =
+            localStorage.getItem("carrotHarvest");
+
+        if (carrotClear) {
+
+            carrotStatus.innerHTML = `
+        ✔ 収穫済み
+        <img src="img/判子アイコン3.png"
+                alt="取得済み"
+                style="width:40px; vertical-align:middle;">
+            `;
+
+        } else {
+
+            carrotStatus.textContent = "未収穫";
+
+        }
+
+        // =====================
+        // 霧を晴らす
+        // =====================
+
+        const mistStatus =
+            document.getElementById("mistStatus");
+
+        const mistButton =
+            document.getElementById("mistButton");
+
+        const mistClear =
+            localStorage.getItem("mistClear");
+
+
+        if (mistClear) {
+
+            mistStatus.innerHTML = `
+        ✔ クリア
+        <img
+            src="img/判子アイコン3.png"
+            alt="クリア"
+            style="
+                width:40px;
+                vertical-align:middle;
+            ">
+        `;
+
+            mistButton.textContent =
+                "クリア済み";
+
+        } else {
+
+            mistStatus.textContent =
+                "未クリア";
+
+        }
+
+        debugArea.appendChild(testBtn);
+        debugArea.appendChild(resetBtn);
+
+    </script>
+
+
+</body>
+
+</html>

@@ -3,658 +3,509 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>スポット1 マーカーAR ほうれんそうばたけ</title>
 
-    <meta name="viewport" content="width=device-width,
-        initial-scale=1.0,
-        maximum-scale=1.0,
-        minimum-scale=1.0,
-        user-scalable=no">
-
-    <title>にんじん収穫</title>
-
-    <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-
-    <!-- AR.js -->
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
-        body {
+        * {
             margin: 0;
-            overflow: hidden;
-            font-family: sans-serif;
-        }
-
-        /* =========================
-           マーカーを合わせる枠
-        ========================= */
-
-        .target {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-
-            width: 180px;
-            height: 180px;
-
-            border: 4px dashed #ff9800;
-            border-radius: 12px;
-
-            z-index: 998;
-
-            pointer-events: none;
-        }
-
-
-        /* =========================
-           下部メッセージ
-        ========================= */
-
-        .ui {
-            position: fixed;
-
-            bottom: 20px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            width: 90%;
-            max-width: 400px;
-
-            background: rgba(255, 255, 255, 0.95);
-
-            padding: 20px;
-
-            border-radius: 16px;
-
-            text-align: center;
-
+            padding: 0;
             box-sizing: border-box;
-
-            z-index: 999;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
-
-        #spotName {
-            margin: 0 0 10px;
-
-            font-size: 28px;
-        }
-
-
-        #message {
-            margin-bottom: 15px;
-
-            font-size: 18px;
-
-            font-weight: bold;
-        }
-
-
-        /* =========================
-           収穫数
-        ========================= */
-
-        #count {
-            font-size: 20px;
-
-            margin-bottom: 10px;
-        }
-
-
-        /* =========================
-           ホームへ戻る
-        ========================= */
-
-        .back {
-            display: block;
-
-            background: #2e7d32;
-
-            color: white;
-
-            text-decoration: none;
-
-            padding: 12px;
-
-            border-radius: 8px;
-        }
-
-
-        /* =========================
-           ゲーム画面
-        ========================= */
-
-        #game {
-            display: none;
-
-            position: fixed;
-
-            top: 0;
-            left: 0;
-
+        html,
+        body {
             width: 100%;
             height: 100%;
+            overflow: hidden;
+            background: transparent !important;
+            font-family: "UD Digi Kyokasho NP-R", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+        }
 
-            z-index: 997;
+        /* MindARのカメラ映像＋3D描画レイヤーはそのまま背景として使う */
+        a-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: transparent !important;
+        }
 
+        video {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            z-index: -1 !important;
+        }
+
+        /* ---- マーカー未検出時の案内 ---- */
+        #searchHint {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 20;
+            padding: 22px;
+            padding-bottom: max(26px, env(safe-area-inset-bottom));
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+            color: #fff;
+            text-align: center;
             pointer-events: none;
         }
 
+        #searchHint .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            padding: 10px 22px;
+            font-size: 16px;
+            font-weight: 600;
+            backdrop-filter: blur(6px);
+        }
 
-        /* =========================
-           畑
-        ========================= */
+        #ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 20;
+            padding: 16px 18px;
+            padding-top: max(16px, env(safe-area-inset-top));
+            background: linear-gradient(rgba(0, 0, 0, 0.6), transparent);
+            color: #fff;
+            pointer-events: none;
+        }
 
-        .field {
-            position: absolute;
+        #ui h1 {
+            font-size: 16px;
+            font-weight: 700;
+        }
 
-            top: 50%;
+        #ui p {
+            font-size: 12px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        /* ---- ゲーム用オーバーレイ（マーカー検出後に表示） ---- */
+        #gameLayer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            display: none;
+        }
+
+        #gameCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        #questionBox {
+            position: fixed;
+            top: 70px;
             left: 50%;
-
-            transform: translate(-50%, -50%);
-
+            transform: translateX(-50%);
+            z-index: 31;
             width: 90%;
-            max-width: 400px;
-
-            height: 300px;
-
-            background: #8d6e63;
-
-            border-radius: 30px;
-
-            box-shadow:
-                inset 0 0 0 8px rgba(0, 0, 0, 0.08);
+            max-width: 380px;
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1f3a24;
+            border-radius: 18px;
+            padding: 16px 18px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 17px;
+            line-height: 1.6;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-
-        /* =========================
-           穴
-        ========================= */
-
-        .hole {
-            position: absolute;
-
-            width: 90px;
-            height: 40px;
-
-            background: #4e342e;
-
-            border-radius: 50%;
-
-            box-shadow:
-                inset 0 5px 8px rgba(0, 0, 0, 0.3);
+        #pullCount {
+            color: #2e8b47;
+            font-size: 20px;
         }
 
-
-        .hole1 {
-            top: 70px;
-            left: 35px;
+        #hint {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 31;
+            padding: 22px;
+            padding-bottom: max(26px, env(safe-area-inset-bottom));
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+            color: #fff;
+            text-align: center;
+            pointer-events: none;
+            display: none;
         }
 
-
-        .hole2 {
-            top: 70px;
-            right: 35px;
+        #hint .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            padding: 10px 22px;
+            font-size: 16px;
+            font-weight: 600;
+            backdrop-filter: blur(6px);
         }
 
-
-        .hole3 {
-            bottom: 50px;
-            left: 50%;
-
-            transform: translateX(-50%);
+        #choices {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 32;
+            padding: 18px;
+            padding-bottom: max(24px, env(safe-area-inset-bottom));
+            display: none;
+            gap: 12px;
+            flex-direction: column;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.75) 30%);
         }
 
-
-        /* =========================
-           にんじん
-        ========================= */
-
-        .carrot {
-
-            position: absolute;
-
-            font-size: 65px;
-
-            cursor: pointer;
-
-            pointer-events: auto;
-
-            user-select: none;
-
-            transition:
-                transform 0.35s ease,
-                opacity 0.35s ease;
+        #choices.show {
+            display: flex;
         }
 
-
-        .carrot1 {
-            top: 10px;
-            left: 47px;
+        .choiceBtn {
+            background: #fff;
+            color: #1f3a24;
+            border: 3px solid #fff;
+            border-radius: 20px;
+            padding: 16px;
+            font-size: 19px;
+            font-weight: 800;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
         }
 
-
-        .carrot2 {
-            top: 10px;
-            right: 47px;
+        .choiceBtn.wrong {
+            background: #ffe3e3;
+            border-color: #ff8a8a;
         }
 
-
-        .carrot3 {
-            bottom: 5px;
-            left: 50%;
-
-            transform: translateX(-50%);
+        .choiceBtn.correct {
+            background: #d6f5e0;
+            border-color: #3fbf7f;
         }
-
-
-        /* =========================
-           抜いたときのアニメーション
-        ========================= */
-
-        .carrot.pulled {
-            transform:
-                translateY(-90px) scale(1.1) rotate(-10deg);
-
-            opacity: 0;
-        }
-
-
-        .carrot3.pulled {
-            transform:
-                translateX(-50%) translateY(-90px) scale(1.1) rotate(10deg);
-
-            opacity: 0;
-        }
-
-
-        /* =========================
-           クリア画面
-        ========================= */
 
         #clearScreen {
-
-            display: none;
-
             position: fixed;
-
-            top: 50%;
-            left: 50%;
-
-            transform: translate(-50%, -50%);
-
-            z-index: 1001;
-
-            width: 85%;
-            max-width: 400px;
-
-            padding: 35px 20px;
-
-            background: rgba(255, 255, 255, 0.96);
-
-            border-radius: 24px;
-
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(160deg, #2b8a5f, #1c5e3f);
+            z-index: 40;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
             text-align: center;
-
-            box-shadow:
-                0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 26px;
         }
 
-
-        #clearScreen h1 {
-
-            margin: 0 0 15px;
-
-            color: #2e7d32;
-
-            font-size: 38px;
+        #clearScreen.show {
+            display: flex;
+            animation: fadeIn 0.5s ease;
         }
 
+        #clearScreen .stamp {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            margin-bottom: 22px;
+            animation: pop 0.5s cubic-bezier(.34, 1.56, .64, 1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        #clearScreen h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
 
         #clearScreen p {
+            font-size: 15px;
+            opacity: 0.95;
+            max-width: 290px;
+            line-height: 1.9;
+        }
 
-            font-size: 20px;
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+            }
 
-            margin-bottom: 20px;
+            80% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
-
 <body>
 
-    <!-- マーカー位置確認用 -->
-    <div class="target"></div>
-
-
-    <!-- =========================
-         ゲーム用UI
-    ========================== -->
-
-    <div class="ui">
-
-        <h2 id="spotName">
-            🥕 にんじん収穫
-        </h2>
-
-        <div id="count">
-            収穫：0 / 3
-        </div>
-
-        <div id="message">
-            マーカーを中央に合わせてください
-        </div>
-
-        <a class="back" href="index.html">
-            ホームへ戻る
-        </a>
-
+    <div id="ui">
+        <h1>由布市ARスタンプラリー</h1>
+        <p>スポット1・ほうれんそうばたけ</p>
     </div>
 
-
-    <!-- =========================
-         にんじん収穫ゲーム
-    ========================== -->
-
-    <div id="game">
-
-        <div class="field">
-
-            <!-- 穴 -->
-            <div class="hole hole1"></div>
-            <div class="hole hole2"></div>
-            <div class="hole hole3"></div>
-
-
-            <!-- にんじん -->
-            <div class="carrot carrot1" data-carrot="1">
-                🥕
-            </div>
-
-            <div class="carrot carrot2" data-carrot="2">
-                🥕
-            </div>
-
-            <div class="carrot carrot3" data-carrot="3">
-                🥕
-            </div>
-
-        </div>
-
+    <div id="searchHint">
+        <div class="badge">印刷したマーカーに カメラを むけてね</div>
     </div>
 
-
-    <!-- =========================
-         クリア画面
-    ========================== -->
-
-    <div id="clearScreen">
-
-        <h1>
-            🎉 クリア！
-        </h1>
-
-        <p>
-            にんじんを3本収穫しました！
-        </p>
-
-        <a class="back" href="index.html">
-            ホームへ戻る
-        </a>
-
-    </div>
-
-
-    <!-- =========================
-         A-Frame / AR.js
-    ========================== -->
-
-    <a-scene embedded vr-mode-ui="enabled: false" renderer="
-            antialias: true;
-            precision: medium;
-        " arjs="
-            sourceType: webcam;
-            facingMode: environment;
-            debugUIEnabled: false;
-        ">
-
-
-        <a-camera>
-        </a-camera>
-
-
-        <!--
-            今回はテストなので
-            既存の jinja.patt を使用
-        -->
-
-        <a-marker id="marker" type="pattern" url="img/jinja.patt">
-
-        </a-marker>
-
+    <!-- MindARのカメラ映像＋マーカー認識 -->
+    <a-scene mindar-image="imageTargetSrc: ./hourensou.mind; autoStart: true; uiScanning: no;" color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights, alpha: true" vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-entity id="target" mindar-image-target="targetIndex: 0"></a-entity>
     </a-scene>
 
+    <!-- マーカー検出後に表示するゲーム画面 -->
+    <div id="gameLayer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
 
-    <!-- =========================
-         JavaScript
-    ========================== -->
+    <div id="questionBox">
+        ほうれんそうを 3束 しゅうかくしよう。<br>
+        3束 ゆびで ひっぱって ぬいてみよう!<br>
+        <span id="pullCount">ぬいた数：0 / 3</span>
+    </div>
+
+    <div id="hint">
+        <div class="badge" id="hintText">ほうれんそうを タップして ひっぱろう</div>
+    </div>
+
+    <div id="choices">
+        <button class="choiceBtn" data-val="6">6つ</button>
+        <button class="choiceBtn" data-val="3">3つ</button>
+        <button class="choiceBtn" data-val="9">9つ</button>
+    </div>
+
+    <div id="clearScreen">
+        <div class="stamp">🥬</div>
+        <h2>せいかい!</h2>
+        <p id="clearText"></p>
+    </div>
+
+    <script src="app.js"></script>
 
     <script>
+        const targetEntity = document.getElementById('target');
+        const searchHint = document.getElementById('searchHint');
+        const gameLayer = document.getElementById('gameLayer');
+        const questionBox = document.getElementById('questionBox');
+        const hint = document.getElementById('hint');
 
-        /* =========================
-           要素取得
-        ========================== */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const hintText = document.getElementById('hintText');
+        const pullCountEl = document.getElementById('pullCount');
+        const choicesBox = document.getElementById('choices');
+        const clearScreen = document.getElementById('clearScreen');
+        const clearText = document.getElementById('clearText');
 
-        const marker =
-            document.getElementById("marker");
+        let W, H;
+        let plants = [];
+        let pulledCount = 0;
+        const PULL_TARGET = 3;
+        let phase = 'pulling';
+        let answered = false;
+        let gameStarted = false;
+        let loopRunning = false;
 
-        const target =
-            document.querySelector(".target");
+        function resize() {
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = W; canvas.height = H;
+            if (plants.length === 0) layoutPlants();
+        }
+        window.addEventListener('resize', resize);
 
-        const message =
-            document.getElementById("message");
-
-        const game =
-            document.getElementById("game");
-
-        const clearScreen =
-            document.getElementById("clearScreen");
-
-        const count =
-            document.getElementById("count");
-
-
-        /* =========================
-           収穫数
-        ========================== */
-
-        let harvestedCount = 0;
-
-
-        /* =========================
-           マーカーを見つけた
-        ========================== */
-
-        marker.addEventListener(
-            "markerFound",
-            () => {
-
-                console.log("マーカー発見");
-
-
-                /* 枠を緑色にする */
-
-                target.style.borderColor =
-                    "#4caf50";
-
-                target.style.background =
-                    "rgba(76,175,80,0.2)";
-
-
-                /* クリア済みならゲーム開始しない */
-
-                if (
-                    localStorage.getItem(
-                        "carrotHarvest"
-                    ) === "clear"
-                ) {
-
-                    message.textContent =
-                        "✔ 収穫済みです";
-
-                    return;
+        function layoutPlants() {
+            plants = [];
+            const cols = 3, rows = 3;
+            const areaTop = H * 0.32;
+            const areaBottom = H * 0.86;
+            const areaLeft = W * 0.15;
+            const areaRight = W * 0.85;
+            const cw = (areaRight - areaLeft) / cols;
+            const rh = (areaBottom - areaTop) / rows;
+            const r = Math.min(cw, rh) * 0.32;
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const jitterX = (Math.random() - 0.5) * cw * 0.25;
+                    const jitterY = (Math.random() - 0.5) * rh * 0.25;
+                    plants.push({
+                        x: areaLeft + cw * col + cw / 2 + jitterX,
+                        y: areaTop + rh * row + rh / 2 + jitterY,
+                        r: r,
+                        pulled: false
+                    });
                 }
-
-
-                /* ゲーム開始 */
-
-                game.style.display =
-                    "block";
-
-                message.textContent =
-                    "🥕 にんじんをタップして収穫しよう！";
-
             }
-        );
-
-
-        /* =========================
-           マーカーを見失った
-        ========================== */
-
-        marker.addEventListener(
-            "markerLost",
-            () => {
-
-                target.style.borderColor =
-                    "#ff9800";
-
-                target.style.background =
-                    "transparent";
-
-
-                if (
-                    localStorage.getItem(
-                        "carrotHarvest"
-                    ) !== "clear"
-                ) {
-
-                    message.textContent =
-                        "マーカーを中央に合わせてください";
-                }
-
-            }
-        );
-
-
-        /* =========================
-           にんじんクリック
-        ========================== */
-
-        const carrots =
-            document.querySelectorAll(
-                ".carrot"
-            );
-
-
-        carrots.forEach(carrot => {
-
-            carrot.addEventListener(
-                "click",
-                () => {
-
-                    /* すでに収穫済みなら何もしない */
-
-                    if (
-                        carrot.classList.contains(
-                            "pulled"
-                        )
-                    ) {
-                        return;
-                    }
-
-
-                    /* 抜く */
-
-                    carrot.classList.add(
-                        "pulled"
-                    );
-
-
-                    /* 収穫数を増やす */
-
-                    harvestedCount++;
-
-
-                    count.textContent =
-                        `収穫：${harvestedCount} / 3`;
-
-
-                    /* 3本収穫 */
-
-                    if (
-                        harvestedCount === 3
-                    ) {
-
-                        setTimeout(
-                            clearGame,
-                            500
-                        );
-
-                    }
-
-                }
-            );
-
-        });
-
-
-        /* =========================
-           クリア処理
-        ========================== */
-
-        function clearGame() {
-
-            /* LocalStorageへ保存 */
-
-            localStorage.setItem(
-                "carrotHarvest",
-                "clear"
-            );
-
-
-            /* ゲームを隠す */
-
-            game.style.display =
-                "none";
-
-
-            /* UIメッセージ */
-
-            message.textContent =
-                "🎉 にんじん収穫クリア！";
-
-
-            message.style.color =
-                "#2e7d32";
-
-
-            /* クリア画面 */
-
-            clearScreen.style.display =
-                "block";
-
-
-            console.log(
-                "にんじん収穫クリア"
-            );
-
         }
 
-    </script>
+        function pointerPos(e) { const t = e.touches ? e.touches[0] : e; return { x: t.clientX, y: t.clientY }; }
 
+        function handleTap(x, y) {
+            if (phase !== 'pulling') return;
+            for (const p of plants) {
+                if (p.pulled) continue;
+                const dist = Math.hypot(x - p.x, y - p.y);
+                if (dist < p.r * 1.6) {
+                    p.pulled = true;
+                    pulledCount++;
+                    pullCountEl.textContent = `ぬいた数：${pulledCount} / ${PULL_TARGET}`;
+                    if (pulledCount >= PULL_TARGET) {
+                        phase = 'quiz';
+                        hintText.textContent = 'ぬいたあと(あな)は いくつ かな？';
+                        setTimeout(() => { choicesBox.classList.add('show'); }, 500);
+                    } else {
+                        hintText.textContent = 'あと ' + (PULL_TARGET - pulledCount) + '束 ひっぱろう';
+                    }
+                    return;
+                }
+            }
+        }
+
+        canvas.addEventListener('touchstart', e => { const p = pointerPos(e); handleTap(p.x, p.y); }, { passive: true });
+        canvas.addEventListener('mousedown', e => { handleTap(e.clientX, e.clientY); });
+
+        choicesBox.addEventListener('click', (e) => {
+            const btn = e.target.closest('.choiceBtn');
+            if (!btn || answered) return;
+            const val = parseInt(btn.dataset.val, 10);
+            if (val === 3) {
+                answered = true;
+                btn.classList.add('correct');
+                hintText.textContent = 'せいかい!';
+
+                setTimeout(() => {
+                    phase = 'done';
+
+                    // 神社スポットをクリアとして保存
+                    StampApp.completeSpot("shrine");
+
+                    clearText.innerHTML =
+                        'ぬいた"あと"（あな）は<br>' +
+                        'ちゃんと <b>3つ</b> のこってるね!<br>' +
+                        '由布市の 湯布院地域は すずしい きこうを いかして、<br>' +
+                        'ほうれんそうの さいばいが さかんなんだよ。';
+
+                    clearScreen.classList.add('show');
+
+                    // 2.5秒後にスタンプカードへ移動
+                    setTimeout(() => {
+                        location.href = "stamp.html?spot=shrine";
+                    }, 2500);
+
+                }, 700);
+            } else {
+                btn.classList.add('wrong');
+                hintText.textContent = 'ちがうよ、もういちど かんがえてみよう';
+                setTimeout(() => { btn.classList.remove('wrong'); }, 700);
+            }
+        });
+
+        function drawPlant(p) {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            if (p.pulled) {
+                ctx.fillStyle = 'rgba(40,26,14,0.8)';
+                ctx.beginPath();
+                ctx.ellipse(0, p.r * 0.3, p.r * 0.9, p.r * 0.45, 0, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.font = `${p.r * 2.1}px serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                ctx.shadowBlur = 10;
+                ctx.fillText('🥬', 0, 0);
+            }
+            ctx.restore();
+        }
+
+        function drawGuideRing(p) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r * 1.6, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(120,255,150,${0.5 + 0.3 * Math.sin(Date.now() / 300)})`;
+            ctx.lineWidth = 3;
+            ctx.setLineDash([8, 8]);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function loop() {
+            if (!loopRunning) return;
+            ctx.clearRect(0, 0, W, H);
+            for (const p of plants) {
+                if (!p.pulled && phase === 'pulling') drawGuideRing(p);
+                drawPlant(p);
+            }
+            requestAnimationFrame(loop);
+        }
+
+        // ---- マーカー検出イベント ----
+        targetEntity.addEventListener('targetFound', () => {
+            searchHint.style.display = 'none';
+            if (!gameStarted) {
+                gameStarted = true;
+                resize();
+                gameLayer.style.display = 'block';
+                questionBox.style.display = 'block';
+                hint.style.display = 'block';
+                loopRunning = true;
+                requestAnimationFrame(loop);
+            }
+        });
+        targetEntity.addEventListener('targetLost', () => {
+            // 一度見つけたらゲームは継続表示（マーカーを外しても遊べるように）
+            if (!gameStarted) searchHint.style.display = 'block';
+        });
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+    <title>スポット7 マーカーAR 3にんの ならびかえ</title>
+
+
+    <!-- =============================
+         A-Frame
+    ============================== -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+
+
+    <!-- =============================
+         MindAR
+    ============================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+            -webkit-tap-highlight-color: transparent;
+
+            user-select: none;
+        }
+
+
+        /* =============================
+           カメラ背景
+        ============================== */
+
+        html,
+        body {
+
+            width: 100%;
+            height: 100%;
+
+            overflow: hidden;
+
+            background: transparent !important;
+            background-color: transparent !important;
+
+            font-family:
+                "UD Digi Kyokasho NP-R",
+                "Hiragino Maru Gothic ProN",
+                "Yu Gothic",
+                sans-serif;
+        }
+
+
+        /* =============================
+           ARシーン
+        ============================== */
+
+        a-scene {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 1;
+
+            background: transparent !important;
+        }
+
+
+        /* =============================
+           カメラ映像
+        ============================== */
+
+        video {
+
+            position: fixed !important;
+
+            top: 0 !important;
+            left: 0 !important;
+
+            width: 100% !important;
+            height: 100% !important;
+
+            object-fit: cover !important;
+
+            z-index: -1 !important;
+        }
+
+
+        /* =============================
+           マーカーを探しているとき
+        ============================== */
+
+        #searchHint {
+
+            position: fixed;
+
+            bottom: 0;
+            left: 0;
+
+            width: 100%;
+
+            z-index: 20;
+
+            padding: 22px;
+
+            padding-bottom:
+                max(26px, env(safe-area-inset-bottom));
+
+            background:
+                linear-gradient(
+                    transparent,
+                    rgba(0, 0, 0, 0.65)
+                );
+
+            color: #fff;
+
+            text-align: center;
+
+            pointer-events: none;
+        }
+
+
+        #searchHint .badge {
+
+            display: inline-block;
+
+            background:
+                rgba(0, 0, 0, 0.4);
+
+            border:
+                2px solid
+                rgba(255, 255, 255, 0.6);
+
+            border-radius: 24px;
+
+            padding: 10px 22px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            backdrop-filter: blur(6px);
+        }
+
+
+        /* =============================
+           上部タイトル
+        ============================== */
+
+        #ui {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+
+            z-index: 20;
+
+            padding: 14px 18px;
+
+            padding-top:
+                max(14px, env(safe-area-inset-top));
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.6),
+                    transparent
+                );
+
+            color: #fff;
+
+            pointer-events: none;
+        }
+
+
+        #ui h1 {
+
+            font-size: 16px;
+
+            font-weight: 700;
+        }
+
+
+        #ui p {
+
+            font-size: 12px;
+
+            opacity: 0.85;
+
+            margin-top: 2px;
+        }
+
+
+        /* =============================
+           ゲーム全体
+        ============================== */
+
+        #gameLayer {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 30;
+
+            display: none;
+
+            pointer-events: none;
+        }
+
+
+        /* =============================
+           ヒント
+        ============================== */
+
+        #clueBox {
+
+            position: fixed;
+
+            top: 64px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 31;
+
+            width: 92%;
+
+            max-width: 400px;
+
+            display: none;
+
+            background:
+                rgba(255, 255, 255, 0.92);
+
+            color: #3a2410;
+
+            border-radius: 16px;
+
+            padding: 14px 18px;
+
+            text-align: center;
+
+            font-weight: 700;
+
+            font-size: 14px;
+
+            line-height: 1.8;
+
+            box-shadow:
+                0 6px 20px
+                rgba(0, 0, 0, 0.3);
+
+            backdrop-filter: blur(4px);
+
+            pointer-events: none;
+        }
+
+
+        /* =============================
+           スロット
+        ============================== */
+
+        #slotsArea {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 32;
+
+            display: none;
+
+            pointer-events: none;
+        }
+
+
+        .slot {
+
+            position: absolute;
+
+            width: 26vw;
+
+            max-width: 130px;
+
+            height: 26vw;
+
+            max-height: 130px;
+
+            border:
+                3px dashed
+                rgba(255, 255, 255, 0.8);
+
+            border-radius: 16px;
+
+            background:
+                rgba(0, 0, 0, 0.25);
+        }
+
+
+        .slotLabel {
+
+            position: absolute;
+
+            top: -26px;
+            left: 0;
+
+            width: 100%;
+
+            text-align: center;
+
+            color: #fff;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-shadow:
+                0 1px 3px
+                rgba(0, 0, 0, 0.8);
+        }
+
+
+        /* =============================
+           キャラクターカード
+        ============================== */
+
+        .card {
+
+            position: absolute;
+
+            width: 24vw;
+
+            max-width: 120px;
+
+            height: 24vw;
+
+            max-height: 120px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(255, 255, 255, 0.95);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow:
+                0 6px 16px
+                rgba(0, 0, 0, 0.35);
+
+            touch-action: none;
+
+            z-index: 35;
+
+            pointer-events: auto;
+        }
+
+
+        .card img {
+
+            width: 82%;
+            height: 82%;
+
+            object-fit: contain;
+
+            pointer-events: none;
+        }
+
+
+        .card.correct {
+
+            box-shadow:
+                0 0 0 4px #3fbf7f,
+                0 6px 16px
+                rgba(0, 0, 0, 0.35);
+        }
+
+
+        /* =============================
+           決定ボタン
+        ============================== */
+
+        #checkBtn {
+
+            position: fixed;
+
+            bottom: 24px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 33;
+
+            display: none;
+
+            background: #fff;
+
+            color: #3a2410;
+
+            border: none;
+
+            border-radius: 30px;
+
+            padding: 14px 36px;
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            box-shadow:
+                0 6px 18px
+                rgba(0, 0, 0, 0.3);
+
+            pointer-events: auto;
+        }
+
+
+        /* =============================
+           下部ヒント
+        ============================== */
+
+        #hint {
+
+            position: fixed;
+
+            bottom: 100px;
+
+            left: 0;
+
+            width: 100%;
+
+            z-index: 31;
+
+            padding: 10px;
+
+            color: #fff;
+
+            text-align: center;
+
+            pointer-events: none;
+
+            display: none;
+        }
+
+
+        #hint .badge {
+
+            display: inline-block;
+
+            background:
+                rgba(0, 0, 0, 0.5);
+
+            border:
+                2px solid
+                rgba(255, 255, 255, 0.6);
+
+            border-radius: 24px;
+
+            padding: 8px 18px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            backdrop-filter: blur(6px);
+        }
+
+
+        /* =============================
+           クリア画面
+        ============================== */
+
+        #clearScreen {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background:
+                rgba(28, 94, 63, 0.92);
+
+            z-index: 40;
+
+            display: none;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #fff;
+
+            text-align: center;
+
+            padding: 26px;
+
+            backdrop-filter: blur(4px);
+
+            pointer-events: auto;
+        }
+
+
+        #clearScreen.show {
+
+            display: flex;
+
+            animation:
+                fadeIn 0.5s ease;
+        }
+
+
+        #clearScreen .stamp {
+
+            width: 130px;
+            height: 130px;
+
+            border-radius: 50%;
+
+            background: #fff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 56px;
+
+            margin-bottom: 22px;
+
+            animation:
+                pop 0.5s
+                cubic-bezier(.34, 1.56, .64, 1);
+
+            box-shadow:
+                0 8px 24px
+                rgba(0, 0, 0, 0.3);
+        }
+
+
+        #clearScreen h2 {
+
+            font-size: 24px;
+
+            margin-bottom: 10px;
+
+            font-weight: 800;
+        }
+
+
+        #clearScreen p {
+
+            font-size: 15px;
+
+            opacity: 0.95;
+
+            max-width: 300px;
+
+            line-height: 1.9;
+        }
+
+
+        @keyframes pop {
+
+            0% {
+                transform: scale(0);
+            }
+
+            80% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =============================
+         上部タイトル
+    ============================== -->
+
+    <div id="ui">
+
+        <h1>
+            由布市ARスタンプラリー
+        </h1>
+
+        <p>
+            スポット7・庄内神楽
+        </p>
+
+    </div>
+
+
+    <!-- =============================
+         マーカー探索表示
+    ============================== -->
+
+    <div id="searchHint">
+
+        <div class="badge">
+            印刷したマーカーに カメラを むけてね
+        </div>
+
+    </div>
+
+
+    <!-- =============================
+         AR
+    ============================== -->
+
+    <a-scene
+        mindar-image="
+            imageTargetSrc: ./kagura.mind;
+            autoStart: true;
+            uiScanning: no;
+        "
+        color-space="sRGB"
+        renderer="
+            colorManagement: true,
+            physicallyCorrectLights,
+            alpha: true
+        "
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+    >
+
+        <a-camera
+            position="0 0 0"
+            look-controls="enabled: false">
+        </a-camera>
+
+
+        <a-entity
+            id="target"
+            mindar-image-target="targetIndex: 0">
+        </a-entity>
+
+    </a-scene>
+
+
+    <!-- =============================
+         ゲーム
+    ============================== -->
+
+    <div id="gameLayer"></div>
+
+
+    <!-- =============================
+         問題
+    ============================== -->
+
+    <div id="clueBox">
+
+        おろちくんは、みことくんの みぎに いないよ。<br>
+
+        ひめちゃんは、いちばん ひだりに いないよ。<br>
+
+        大蛇(おろち)を たいじする かみさま(みことくん)は、<br>
+
+        まんなかに たつよ。
+
+    </div>
+
+
+    <!-- =============================
+         並び替えスロット
+    ============================== -->
+
+    <div id="slotsArea">
+
+        <div class="slot" id="slotL">
+
+            <div class="slotLabel">
+                ひだり
+            </div>
+
+        </div>
+
+
+        <div class="slot" id="slotC">
+
+            <div class="slotLabel">
+                まんなか
+            </div>
+
+        </div>
+
+
+        <div class="slot" id="slotR">
+
+            <div class="slotLabel">
+                みぎ
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =============================
+         下部ヒント
+    ============================== -->
+
+    <div id="hint">
+
+        <div class="badge" id="hintText">
+
+            カードを ゆびで ドラッグして うごかそう
+
+        </div>
+
+    </div>
+
+
+    <!-- =============================
+         決定ボタン
+    ============================== -->
+
+    <button id="checkBtn">
+
+        これで けってい!
+
+    </button>
+
+
+    <!-- =============================
+         クリア画面
+    ============================== -->
+
+    <div id="clearScreen">
+
+        <div class="stamp">
+            ⛩️
+        </div>
+
+        <h2>
+            せいかい!
+        </h2>
+
+        <p id="clearText"></p>
+
+    </div>
+
+
+    <!-- =============================
+         StampApp
+    ============================== -->
+
+    <script src="app.js"></script>
+
+
+    <script>
+
+        const targetEntity =
+            document.getElementById("target");
+
+        const searchHint =
+            document.getElementById("searchHint");
+
+        const gameLayer =
+            document.getElementById("gameLayer");
+
+        const clueBox =
+            document.getElementById("clueBox");
+
+        const slotsArea =
+            document.getElementById("slotsArea");
+
+        const hint =
+            document.getElementById("hint");
+
+        const hintText =
+            document.getElementById("hintText");
+
+        const checkBtn =
+            document.getElementById("checkBtn");
+
+        const clearScreen =
+            document.getElementById("clearScreen");
+
+        const clearText =
+            document.getElementById("clearText");
+
+
+        /* =============================
+           キャラクター
+        ============================== */
+
+        const CHARACTERS = [
+
+            {
+                id: "orochi",
+                name: "おろちくん",
+                img: "char_orochi.png",
+                correctSlot: "L"
+            },
+
+            {
+                id: "mikoto",
+                name: "みことくん",
+                img: "char_mikoto.png",
+                correctSlot: "C"
+            },
+
+            {
+                id: "hime",
+                name: "ひめちゃん",
+                img: "char_hime.png",
+                correctSlot: "R"
+            }
+
+        ];
+
+
+        let cards = [];
+
+        let cleared = false;
+
+        let gameStarted = false;
+
+
+        /* =============================
+           ゲーム開始
+        ============================== */
+
+        function setupGame() {
+
+            const shuffled =
+                [...CHARACTERS]
+                    .sort(() => Math.random() - 0.5);
+
+
+            const W =
+                window.innerWidth;
+
+            const H =
+                window.innerHeight;
+
+
+            const startY =
+                H * 0.62;
+
+
+            const positions = [
+
+                W * 0.18,
+
+                W * 0.5,
+
+                W * 0.82
+
+            ];
+
+
+            /* =============================
+               スロット位置
+            ============================== */
+
+            const slotL =
+                document.getElementById("slotL");
+
+            const slotC =
+                document.getElementById("slotC");
+
+            const slotR =
+                document.getElementById("slotR");
+
+
+            const slotY =
+                H * 0.38;
+
+
+            const slotW =
+                Math.min(W * 0.26, 130);
+
+
+            slotL.style.top =
+                slotY + "px";
+
+            slotL.style.left =
+                (W * 0.18 - slotW / 2) + "px";
+
+
+            slotC.style.top =
+                slotY + "px";
+
+            slotC.style.left =
+                (W * 0.5 - slotW / 2) + "px";
+
+
+            slotR.style.top =
+                slotY + "px";
+
+            slotR.style.left =
+                (W * 0.82 - slotW / 2) + "px";
+
+
+            /* =============================
+               カード生成
+            ============================== */
+
+            const cardW =
+                Math.min(W * 0.24, 120);
+
+
+            shuffled.forEach((ch, i) => {
+
+                const card =
+                    document.createElement("div");
+
+
+                card.className =
+                    "card";
+
+
+                card.dataset.id =
+                    ch.id;
+
+
+                card.style.left =
+                    (positions[i] - cardW / 2) + "px";
+
+
+                card.style.top =
+                    startY + "px";
+
+
+                const img =
+                    document.createElement("img");
+
+
+                img.src =
+                    ch.img;
+
+
+                card.appendChild(img);
+
+
+                gameLayer.appendChild(card);
+
+
+                cards.push(card);
+
+
+                makeDraggable(card);
+
+            });
+
+        }
+
+
+        /* =============================
+           ドラッグ処理
+        ============================== */
+
+        function makeDraggable(card) {
+
+            let dragging = false;
+
+            let offsetX = 0;
+
+            let offsetY = 0;
+
+
+            function start(x, y) {
+
+                if (cleared) {
+                    return;
+                }
+
+
+                dragging = true;
+
+
+                const rect =
+                    card.getBoundingClientRect();
+
+
+                offsetX =
+                    x - rect.left;
+
+
+                offsetY =
+                    y - rect.top;
+
+
+                card.style.zIndex =
+                    999;
+            }
+
+
+            function move(x, y) {
+
+                if (!dragging) {
+                    return;
+                }
+
+
+                card.style.left =
+                    (x - offsetX) + "px";
+
+
+                card.style.top =
+                    (y - offsetY) + "px";
+
+            }
+
+
+            function end() {
+
+                if (!dragging) {
+                    return;
+                }
+
+
+                dragging = false;
+
+
+                card.style.zIndex =
+                    35;
+
+
+                snapToNearestSlot(card);
+
+            }
+
+
+            /* =============================
+               タッチ
+            ============================== */
+
+            card.addEventListener(
+                "touchstart",
+                e => {
+
+                    const t =
+                        e.touches[0];
+
+                    start(
+                        t.clientX,
+                        t.clientY
+                    );
+
+                },
+                {
+                    passive: true
+                }
+            );
+
+
+            window.addEventListener(
+                "touchmove",
+                e => {
+
+                    if (
+                        dragging &&
+                        e.touches.length > 0
+                    ) {
+
+                        const t =
+                            e.touches[0];
+
+                        move(
+                            t.clientX,
+                            t.clientY
+                        );
+                    }
+
+                },
+                {
+                    passive: true
+                }
+            );
+
+
+            window.addEventListener(
+                "touchend",
+                end
+            );
+
+
+            /* =============================
+               マウス
+            ============================== */
+
+            card.addEventListener(
+                "mousedown",
+                e => {
+
+                    start(
+                        e.clientX,
+                        e.clientY
+                    );
+
+                }
+            );
+
+
+            window.addEventListener(
+                "mousemove",
+                e => {
+
+                    move(
+                        e.clientX,
+                        e.clientY
+                    );
+
+                }
+            );
+
+
+            window.addEventListener(
+                "mouseup",
+                end
+            );
+
+        }
+
+
+        /* =============================
+           一番近い枠へ移動
+        ============================== */
+
+        function snapToNearestSlot(card) {
+
+            const slots = [
+
+                document.getElementById("slotL"),
+
+                document.getElementById("slotC"),
+
+                document.getElementById("slotR")
+
+            ];
+
+
+            const cardRect =
+                card.getBoundingClientRect();
+
+
+            const cx =
+                cardRect.left +
+                cardRect.width / 2;
+
+
+            const cy =
+                cardRect.top +
+                cardRect.height / 2;
+
+
+            let nearest = null;
+
+            let nearestDist =
+                Infinity;
+
+
+            slots.forEach(slot => {
+
+                const r =
+                    slot.getBoundingClientRect();
+
+
+                const sx =
+                    r.left +
+                    r.width / 2;
+
+
+                const sy =
+                    r.top +
+                    r.height / 2;
+
+
+                const d =
+                    Math.hypot(
+                        cx - sx,
+                        cy - sy
+                    );
+
+
+                if (d < nearestDist) {
+
+                    nearestDist =
+                        d;
+
+                    nearest =
+                        slot;
+
+                }
+
+            });
+
+
+            if (
+                nearest &&
+                nearestDist < 140
+            ) {
+
+                const occupied =
+                    cards.find(
+                        c =>
+                            c !== card &&
+                            c.dataset.slot ===
+                                nearest.id
+                    );
+
+
+                if (occupied) {
+
+                    occupied.dataset.slot =
+                        "";
+
+                }
+
+
+                card.dataset.slot =
+                    nearest.id;
+
+
+                const r =
+                    nearest.getBoundingClientRect();
+
+
+                card.style.left =
+                    (
+                        r.left +
+                        r.width / 2 -
+                        cardRect.width / 2
+                    ) + "px";
+
+
+                card.style.top =
+                    (
+                        r.top +
+                        r.height / 2 -
+                        cardRect.height / 2
+                    ) + "px";
+
+            } else {
+
+                card.dataset.slot =
+                    "";
+
+            }
+
+        }
+
+
+        /* =============================
+           決定ボタン
+        ============================== */
+
+        checkBtn.addEventListener(
+            "click",
+            () => {
+
+                if (cleared) {
+                    return;
+                }
+
+
+                const slotMap = {
+
+                    slotL: "L",
+
+                    slotC: "C",
+
+                    slotR: "R"
+
+                };
+
+
+                let allPlaced =
+                    true;
+
+
+                let allCorrect =
+                    true;
+
+
+                cards.forEach(card => {
+
+                    const slotId =
+                        card.dataset.slot;
+
+
+                    if (!slotId) {
+
+                        allPlaced =
+                            false;
+
+                        return;
+                    }
+
+
+                    const ch =
+                        CHARACTERS.find(
+                            c =>
+                                c.id ===
+                                card.dataset.id
+                        );
+
+
+                    const placedSlotLetter =
+                        slotMap[slotId];
+
+
+                    if (
+                        placedSlotLetter ===
+                        ch.correctSlot
+                    ) {
+
+                        card.classList.add(
+                            "correct"
+                        );
+
+                    } else {
+
+                        card.classList.remove(
+                            "correct"
+                        );
+
+                        allCorrect =
+                            false;
+                    }
+
+                });
+
+
+                /* =============================
+                   全員配置されていない
+                ============================== */
+
+                if (!allPlaced) {
+
+                    hintText.textContent =
+                        "3にん ぜんいん、わくの なかに いれてね";
+
+                    return;
+                }
+
+
+                /* =============================
+                   正解
+                ============================== */
+
+                if (allCorrect) {
+
+                    cleared = true;
+
+
+                    hintText.textContent =
+                        "せいかい!";
+
+
+                    setTimeout(
+                        () => {
+
+                            clearText.innerHTML =
+                                "庄内神楽(しょうないかぐら)では、<br>" +
+                                "大蛇(おろち)を たいじする お話が えんじられるよ。<br>" +
+                                "ひだりから おろちくん・みことくん・ひめちゃんの じゅんばん、<br>" +
+                                "おぼえたかな?";
+
+
+                            clearScreen.classList.add(
+                                "show"
+                            );
+
+
+                            /* =============================
+                               図書館スタンプを保存
+                            ============================== */
+
+                            StampApp.completeSpot(
+                                "library"
+                            );
+
+
+                            /* =============================
+                               スタンプカードへ移動
+                            ============================== */
+
+                            setTimeout(
+                                () => {
+
+                                    location.href =
+                                        "stamp.html?spot=library";
+
+                                },
+                                2000
+                            );
+
+                        },
+                        700
+                    );
+
+                } else {
+
+                    hintText.textContent =
+                        "ちがう じゅんばんみたい。もういちど ヒントを よもう";
+
+                }
+
+            }
+        );
+
+
+        /* =============================
+           マーカーを見つけた
+        ============================== */
+
+        targetEntity.addEventListener(
+            "targetFound",
+            () => {
+
+                console.log(
+                    "図書館スポットのマーカーを認識しました"
+                );
+
+
+                searchHint.style.display =
+                    "none";
+
+
+                /* =============================
+                   すでにクリア済み
+                ============================== */
+
+                if (
+                    StampApp.isCleared(
+                        "library"
+                    )
+                ) {
+
+                    console.log(
+                        "図書館はすでにクリア済みです"
+                    );
+
+
+                    clearText.innerHTML =
+                        "このスポットは、<br>" +
+                        "すでにクリアしています！";
+
+
+                    clearScreen.classList.add(
+                        "show"
+                    );
+
+
+                    setTimeout(
+                        () => {
+
+                            location.href =
+                                "stamp.html?spot=library";
+
+                        },
+                        1500
+                    );
+
+
+                    return;
+                }
+
+
+                /* =============================
+                   初回プレイ
+                ============================== */
+
+                if (!gameStarted) {
+
+                    gameStarted =
+                        true;
+
+
+                    gameLayer.style.display =
+                        "block";
+
+
+                    clueBox.style.display =
+                        "block";
+
+
+                    slotsArea.style.display =
+                        "block";
+
+
+                    hint.style.display =
+                        "block";
+
+
+                    checkBtn.style.display =
+                        "block";
+
+
+                    setupGame();
+
+                }
+
+            }
+        );
+
+
+        /* =============================
+           マーカーを見失った
+        ============================== */
+
+        targetEntity.addEventListener(
+            "targetLost",
+            () => {
+
+                if (!gameStarted) {
+
+                    searchHint.style.display =
+                        "block";
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

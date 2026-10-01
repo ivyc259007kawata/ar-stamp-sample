@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>謎解き⑦</title>
+
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family: sans-serif;
+
+            background: #f5f3f0;
+
+            color: #333;
+
+        }
+
+
+        header {
+
+            background: white;
+
+            padding: 15px;
+
+            text-align: center;
+
+        }
+
+
+        header h1 {
+
+            margin: 0;
+
+            font-size: 22px;
+
+        }
+
+
+        main {
+
+            max-width: 600px;
+
+            margin: auto;
+
+            padding: 15px;
+
+        }
+
+
+        .instruction {
+
+            background: white;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .instruction h2 {
+
+            margin-top: 0;
+
+        }
+
+
+        .stage {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 15px;
+
+        }
+
+
+        .slots {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .slot {
+
+            width: 80px;
+
+            height: 80px;
+
+            border: 3px dashed #aaa;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 14px;
+
+            background: #f5f3f0;
+
+        }
+
+
+        .characters {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            min-height: 90px;
+
+        }
+
+
+        .character {
+
+            width: 80px;
+
+            height: 80px;
+
+            border: 2px solid #aaa;
+
+            border-radius: 12px;
+
+            background: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 42px;
+
+            cursor: grab;
+
+            user-select: none;
+
+            touch-action: none;
+
+        }
+
+
+        .character:active {
+
+            cursor: grabbing;
+
+        }
+
+
+        .character.dragging {
+
+            opacity: 0.5;
+
+        }
+
+
+        .slot.over {
+
+            border-color: #4caf50;
+
+            background: #e8f5e9;
+
+        }
+
+
+        #result {
+
+            margin-top: 15px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            text-align: center;
+
+            font-weight: bold;
+
+        }
+
+
+        .success {
+
+            background: #e8f5e9;
+
+            color: #2e7d32;
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <header>
+
+        <h1>謎解き⑦</h1>
+
+    </header>
+
+
+    <main>
+
+
+        <div class="instruction">
+
+            <h2>🧩 キャラクターを並べよう</h2>
+
+
+            <p>
+                次の条件を読んで、
+                キャラクターを正しい順番に並べよう！
+            </p>
+
+
+            <ul>
+
+                <li>🐱 は一番左</li>
+
+                <li>🐶 は 🐱 のとなり</li>
+
+                <li>🦊 は一番右</li>
+
+            </ul>
+
+
+            <p>
+                👆 キャラクターを
+                ドラッグして動かしてみよう！
+            </p>
+
+        </div>
+
+
+        <div class="stage">
+
+
+            <!-- 正解を置く場所 -->
+
+            <div class="slots">
+
+                <div class="slot" data-position="0">
+                    ①
+                </div>
+
+                <div class="slot" data-position="1">
+                    ②
+                </div>
+
+                <div class="slot" data-position="2">
+                    ③
+                </div>
+
+            </div>
+
+
+            <!-- キャラクター -->
+
+            <div class="characters" id="characters">
+
+                <div class="character" draggable="true" data-character="🐶">
+                    🐶
+                </div>
+
+
+                <div class="character" draggable="true" data-character="🦊">
+                    🦊
+                </div>
+
+
+                <div class="character" draggable="true" data-character="🐱">
+                    🐱
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div id="result"></div>
+
+
+    </main>
+
+
+    <script>
+
+        const characters =
+            document.querySelectorAll(".character");
+
+
+        const slots =
+            document.querySelectorAll(".slot");
+
+
+        let draggedCharacter = null;
+
+
+
+        // ==================================
+        // ドラッグ開始
+        // ==================================
+
+        characters.forEach(character => {
+
+            character.addEventListener(
+                "dragstart",
+                () => {
+
+                    draggedCharacter =
+                        character;
+
+                    character.classList.add(
+                        "dragging"
+                    );
+
+                }
+            );
+
+
+            character.addEventListener(
+                "dragend",
+                () => {
+
+                    character.classList.remove(
+                        "dragging"
+                    );
+
+                }
+            );
+
+        });
+
+
+
+        // ==================================
+        // スロットの上に来た
+        // ==================================
+
+        slots.forEach(slot => {
+
+            slot.addEventListener(
+                "dragover",
+                event => {
+
+                    event.preventDefault();
+
+                    slot.classList.add("over");
+
+                }
+            );
+
+
+            slot.addEventListener(
+                "dragleave",
+                () => {
+
+                    slot.classList.remove("over");
+
+                }
+            );
+
+
+            // ==================================
+            // キャラクターを置いた
+            // ==================================
+
+            slot.addEventListener(
+                "drop",
+                event => {
+
+                    event.preventDefault();
+
+                    slot.classList.remove("over");
+
+
+                    if (!draggedCharacter) {
+                        return;
+                    }
+
+
+                    const oldCharacter =
+                        slot.querySelector(
+                            ".character"
+                        );
+
+
+                    // すでにキャラクターがいる場合
+                    // 入れ替える
+
+                    if (oldCharacter) {
+
+                        const parent =
+                            draggedCharacter.parentElement;
+
+                        parent.appendChild(
+                            oldCharacter
+                        );
+
+                    }
+
+
+                    slot.appendChild(
+                        draggedCharacter
+                    );
+
+
+                    draggedCharacter = null;
+
+
+                    checkAnswer();
+
+                }
+            );
+
+        });
+
+
+
+        // ==================================
+        // 正解判定
+        // ==================================
+
+        function checkAnswer() {
+
+            const order =
+                Array.from(slots).map(slot => {
+
+                    const character =
+                        slot.querySelector(
+                            ".character"
+                        );
+
+
+                    return character
+                        ? character.dataset.character
+                        : "";
+
+                });
+
+
+            console.log(order);
+
+
+            const correct =
+                ["🐱", "🐶", "🦊"];
+
+
+            const isCorrect =
+                order.every(
+                    (value, index) =>
+                        value === correct[index]
+                );
+
+
+            if (isCorrect) {
+
+                document.getElementById(
+                    "result"
+                ).className = "success";
+
+
+                document.getElementById(
+                    "result"
+                ).innerHTML =
+
+                    `
+                🎉 正解！
+                <br><br>
+                キャラクターを
+                正しい順番に並べられた！
+                `;
+
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
