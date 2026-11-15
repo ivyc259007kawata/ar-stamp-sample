@@ -1,14 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap');
+/* =================================
+   基本設定
+================================= */
 
 :root {
-    --ink: #34423c;
-    --muted: #78847d;
-    --green: #5c9878;
-    --green-dark: #3f765b;
-    --cream: #fbf8ef;
-    --paper: #ffffff;
-    --line: #e9e8dc;
-    --orange: #e7a35e;
+    --green: #557A4E;
+    --green-dark: #365B3D;
+    --green-light: #E7F0E4;
+
+    --cream: #F5EBD6;
+    --paper: #FFFAF0;
+
+    --orange: #D99A48;
+    --gold: #E8BD69;
+
+    --ink: #3F493B;
+    --muted: #7B806F;
+    --line: #DED4BE;
+
+    --shadow: 0 5px 16px rgba(65, 72, 49, 0.09);
 }
 
 * {
@@ -21,8 +30,8 @@ html {
 
 body {
     margin: 0;
-    color: var(--ink);
     background: var(--cream);
+    color: var(--ink);
     font-family: "Nunito", "Kiwi Maru", sans-serif;
 }
 
@@ -31,835 +40,632 @@ a {
     text-decoration: none;
 }
 
+button,
+input {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+
+/* =================================
+   ヘッダー
+================================= */
+
 .site-header {
-    height: 70px;
-    padding: 0 max(5%, calc((100% - 1100px) / 2));
+    height: 76px;
+    padding: 0 5%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #fffefa;
-    border-bottom: 1px solid var(--line);
+    background: var(--green-dark);
+    color: white;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 9px;
     font-family: "Kiwi Maru", sans-serif;
-    font-size: 18px;
+    font-size: 23px;
     font-weight: 500;
 }
 
-.logo-icon {
-    font-size: 25px;
-}
-
-.header-stamp {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 10px 15px;
-    border: 1px solid #d9e5d9;
-    border-radius: 30px;
-    background: #f2f7ee;
-    color: var(--green-dark);
+.header-label {
     font-size: 13px;
+    letter-spacing: 2px;
+    color: #F4DCA8;
     font-weight: 800;
 }
 
+
+/* =================================
+   メイン
+================================= */
+
 main {
-    width: min(100% - 36px, 1050px);
-    margin: 0 auto;
+    width: min(92%, 1250px);
+    margin: 30px auto 60px;
 }
 
 .hero {
-    position: relative;
+    min-height: 320px;
+    padding: 35px 45px;
     display: flex;
-    min-height: 330px;
-    margin-top: 30px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+
+    background:
+        linear-gradient(rgba(66, 107, 72, 0.25), rgba(66, 107, 72, 0.25)),
+        url("./haikei.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 24px;
+    color: white;
     overflow: hidden;
-    border-radius: 26px;
-    background: #e8f0df;
+    box-shadow: var(--shadow);
 }
 
 .hero-content {
-    z-index: 2;
-    width: 58%;
-    padding: 42px 0 38px 48px;
+    max-width: 720px;
 }
 
 .hero-label,
-.section-label {
-    margin: 0 0 8px;
-    color: var(--green-dark);
-    font-size: 11px;
+.eyebrow {
+    margin: 0 0 10px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: 2px;
+    color: var(--orange);
 }
 
 .hero h1 {
-    margin: 0;
+    margin: 0 0 16px;
     font-family: "Kiwi Maru", sans-serif;
-    font-size: clamp(27px, 4vw, 39px);
+    font-size: clamp(30px, 3vw, 42px);
     line-height: 1.55;
-    letter-spacing: 1px;
-}
-
-.hero h1 span {
-    color: var(--green-dark);
+    color: #FFF8E8;
 }
 
 .hero-description {
-    margin: 12px 0 20px;
-    color: #65756a;
-    font-size: 13px;
+    max-width: 600px;
+    margin-bottom: 24px;
+    color: #F3EDDB;
+    font-size: 15px;
     line-height: 1.9;
 }
 
-.hero-button {
+
+
+/* =================================
+   ボタン
+================================= */
+
+.primary-button {
+    min-height: 56px;
+    padding: 14px 28px;
     display: inline-flex;
     align-items: center;
-    gap: 24px;
-    padding: 12px 19px;
-    border-radius: 30px;
-    background: var(--green);
-    color: white;
-    font-size: 13px;
+    justify-content: center;
+
+    background: var(--orange);
+    color: #3E3B2C;
+
+    border: none;
+    border-radius: 14px;
+
+    font-size: 16px;
     font-weight: 800;
-    box-shadow: 0 4px 0 #46795f;
-    transition: transform .2s, background .2s;
+
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
 }
 
-.hero-button:hover {
+.primary-button:hover {
+    background: var(--gold);
     transform: translateY(-2px);
-    background: var(--green-dark);
 }
 
-.hero-illustration {
-    position: absolute;
-    inset: 0 0 0 48%;
-    overflow: hidden;
-}
 
-.sun {
-    position: absolute;
-    top: 35px;
-    right: 55px;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: #f5cf79;
-}
-
-.cloud {
-    position: absolute;
-    width: 80px;
-    height: 23px;
-    border-radius: 30px;
-    background: rgba(255, 255, 255, .8);
-}
-
-.cloud::before,
-.cloud::after {
-    position: absolute;
-    content: "";
-    bottom: 6px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background: inherit;
-}
-
-.cloud::before {
-    left: 13px;
-}
-
-.cloud::after {
-    right: 13px;
-}
-
-.cloud-one {
-    top: 80px;
-    left: 20px;
-}
-
-.cloud-two {
-    top: 125px;
-    right: 5px;
-    transform: scale(.7);
-}
-
-.hill {
-    position: absolute;
-    bottom: -75px;
-    width: 120%;
-    height: 170px;
-    border-radius: 50% 50% 0 0;
-}
-
-.hill-back {
-    left: -20px;
-    background: #bed7ad;
-    transform: rotate(-9deg);
-}
-
-.hill-front {
-    left: 60px;
-    bottom: -105px;
-    background: #91bb91;
-    transform: rotate(9deg);
-}
-
-.hero-character {
-    position: absolute;
-    z-index: 2;
-    right: 29%;
-    bottom: 45px;
-    font-size: clamp(65px, 9vw, 105px);
-    filter: drop-shadow(0 7px 2px rgba(50, 80, 50, .12));
-}
-
-.sparkle {
-    position: absolute;
-    z-index: 2;
-    color: #e7ad48;
-    font-size: 26px;
-}
-
-.sparkle-one {
-    top: 90px;
-    right: 37%;
-}
-
-.sparkle-two {
-    top: 165px;
-    right: 15%;
-}
-
-.sparkle-three {
-    bottom: 105px;
-    left: 23%;
-}
+/* =================================
+   セクション共通
+================================= */
 
 .progress-section,
+.stamp-section,
 .spots-section,
+.final-section,
 .howto-section {
-    margin-top: 45px;
+    margin-top: 35px;
 }
 
 .section-heading {
     display: flex;
-    align-items: end;
+    align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 17px;
+    gap: 20px;
 }
 
 .section-heading h2,
-.howto-section h2 {
+.howto-section h2,
+.final-section h2 {
     margin: 0;
     font-family: "Kiwi Maru", sans-serif;
-    font-size: 21px;
+    font-size: 24px;
+}
+
+.section-heading .eyebrow,
+.howto-section .eyebrow,
+.final-section .eyebrow {
+    margin-bottom: 5px;
+}
+
+.section-description {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+
+/* =================================
+   進捗
+================================= */
+
+.progress-section {
+    padding: 25px 30px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 20px;
 }
 
 .progress-count {
-    color: var(--green-dark);
-    font-size: 20px;
+    margin: 0;
+    color: var(--green);
+    font-size: 30px;
     font-weight: 800;
 }
 
 .progress-track {
-    height: 12px;
+    width: 100%;
+    height: 15px;
+    margin-top: 18px;
     overflow: hidden;
-    border-radius: 20px;
-    background: #e7e8dd;
+    background: #E4D8BF;
+    border-radius: 30px;
 }
 
 .progress-fill {
     width: 0;
     height: 100%;
+    background: linear-gradient(90deg, var(--green), #8DA76B);
     border-radius: inherit;
-    background: #75a985;
-    transition: width .4s ease;
+    transition: width 0.4s ease;
 }
 
 .progress-message {
-    margin: 10px 0 0;
+    margin: 12px 0 0;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 14px;
 }
 
-/* =============================
-   スタンプコンプリート表示
-============================= */
 
-.complete-home-message {
+/* =================================
+   スタンプ
+================================= */
 
-    display: none;
+.stamp-caption,
+.route-label {
+    color: var(--muted);
+    font-size: 13px;
+}
 
-    width: 100%;
-
+.stamp-list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 15px;
     margin-top: 18px;
-
-    padding: 16px 20px;
-
-    border: 1px solid #eadfbe;
-
-    border-radius: 18px;
-
-    background: #fffaf0;
-
-    box-shadow:
-        0 4px 12px rgba(59, 71, 54, 0.06);
-
-    align-items: center;
-
-    gap: 14px;
-
-    animation:
-        completeAppear 0.5s ease;
 }
 
-
-.complete-home-icon {
-
-    width: 48px;
-
-    height: 48px;
-
-    flex-shrink: 0;
-
+.stamp-card {
+    min-height: 105px;
     display: flex;
-
+    flex-direction: column;
     align-items: center;
-
     justify-content: center;
+    gap: 7px;
 
-    border-radius: 50%;
-
-    background: #fff;
-
-    font-size: 27px;
-
-    box-shadow:
-        0 2px 7px rgba(59, 71, 54, 0.08);
+    background: var(--paper);
+    border: 2px dashed #CDBD9D;
+    border-radius: 16px;
 }
 
-
-.complete-home-message h3 {
-
-    margin: 0 0 5px;
-
-    font-family:
-        "Kiwi Maru",
-        sans-serif;
-
-    font-size: 17px;
-
-    color: #c98235;
+.stamp-card.collected {
+    border: 2px solid var(--gold);
+    background: #FFF3D7;
 }
 
+.stamp-letter {
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 34px;
+    font-weight: 500;
+    color: #A66D2F;
+}
 
-.complete-home-message p {
-
-    margin: 0;
-
-    color: #788078;
-
+.stamp-number {
+    color: var(--muted);
     font-size: 11px;
-
-    line-height: 1.7;
 }
 
 
-/* =============================
-   表示アニメーション
-============================= */
-
-@keyframes completeAppear {
-
-    from {
-
-        opacity: 0;
-
-        transform:
-            translateY(8px);
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0);
-    }
-
-}
-
-
-/* =============================
-   コンプリート時の
-   スタンプカード案内
-============================= */
-
-.stamp-banner.complete {
-
-    border-color: #e3cf9f;
-
-    background: #fff7df;
-
-    box-shadow:
-        0 6px 20px rgba(59, 71, 54, 0.08);
-}
-
-
-.stamp-banner.complete .stamp-banner-icon {
-
-    animation:
-        stampCompleteIcon 1.2s ease infinite alternate;
-}
-
-
-@keyframes stampCompleteIcon {
-
-    from {
-
-        transform:
-            translateY(0) rotate(-4deg);
-    }
-
-    to {
-
-        transform:
-            translateY(-3px) rotate(4deg);
-    }
-
-}
+/* =================================
+   探検スポット
+================================= */
 
 .spot-list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 17px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 20px;
 }
 
 .spot-card {
-    overflow: hidden;
-    border: 1px solid #ece9df;
-    border-radius: 18px;
+    grid-column: span 2;
+    padding: 20px;
+
     background: var(--paper);
-    box-shadow: 0 5px 18px rgba(59, 71, 54, .045);
-    transition: transform .2s, box-shadow .2s;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+
+    box-shadow: var(--shadow);
 }
 
-.spot-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(59, 71, 54, .09);
+.spot-card:nth-child(4) {
+    grid-column: 2 / span 2;
 }
 
-.spot-visual {
-    position: relative;
-    display: grid;
-    height: 145px;
-    place-items: center;
-    overflow: hidden;
+.spot-card:nth-child(5) {
+    grid-column: 4 / span 2;
 }
 
-.shrine-visual {
-    background: #f5e9dc;
+.spot-card.current {
+    border: 3px solid var(--green);
+    background: #F3F8EF;
 }
 
-.park-visual {
-    background: #e5efdc;
-}
-
-.library-visual {
-    background: #e6e9f3;
-}
-
-.spot-emoji {
-    z-index: 1;
-    font-size: 65px;
-    filter: drop-shadow(0 5px 2px rgba(0, 0, 0, .08));
+.spot-card.cleared {
+    background: #F0F0E5;
 }
 
 .spot-number {
-    position: absolute;
-    top: 12px;
-    left: 13px;
-    color: rgba(52, 66, 60, .55);
+    color: var(--orange);
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 1px;
 }
 
-.visual-decoration {
-    position: absolute;
-    right: 19px;
-    bottom: 12px;
-    color: rgba(255, 255, 255, .85);
-    font-size: 35px;
-}
-
-.spot-content {
-    padding: 17px;
-}
-
-.spot-topline {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 5px;
-}
-
-.spot-category {
-    color: #98a098;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1px;
-}
-
-.status-badge {
-    padding: 5px 9px;
-    border-radius: 20px;
-    background: #f1f1eb;
-    color: #858b83;
-    font-size: 10px;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-.status-badge.cleared {
-    background: #e4f3e5;
-    color: #39794f;
-}
-
-.spot-content h3 {
-    margin: 12px 0 7px;
+.spot-card h3 {
+    margin: 8px 0;
     font-family: "Kiwi Maru", sans-serif;
-    font-size: 17px;
+    font-size: 19px;
 }
 
-.spot-content p {
-    min-height: 57px;
-    margin: 0 0 16px;
-    color: #788078;
-    font-size: 11px;
-    line-height: 1.8;
-}
-
-.spot-button {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 11px 13px;
-    border: 1px solid #d7e6d7;
-    border-radius: 10px;
-    background: #f3f8f0;
-    color: var(--green-dark);
-    font-size: 12px;
-    font-weight: 800;
-    transition: background .2s;
-}
-
-.spot-button:hover {
-    background: #e4f0df;
-}
-
-.spot-button.cleared-button {
-    border-color: #b6d8bb;
-    background: #eaf5e9;
-}
-
-.button-arrow {
-    font-size: 17px;
-}
-
-.stamp-banner {
-    display: flex;
-    align-items: center;
-    gap: 17px;
-    margin-top: 35px;
-    padding: 22px 25px;
-    border: 1px solid #eadfbe;
-    border-radius: 17px;
-    background: #fff7df;
-}
-
-.stamp-banner-icon {
-    font-size: 36px;
-}
-
-.stamp-banner-text {
-    flex: 1;
-}
-
-.stamp-banner-text h2 {
-    margin: 0 0 5px;
-    font-family: "Kiwi Maru", sans-serif;
-    font-size: 15px;
-}
-
-.stamp-banner-text p {
-    margin: 0;
-    color: #8a806a;
-    font-size: 11px;
-}
-
-.stamp-banner-button {
-    padding: 11px 15px;
-    border-radius: 30px;
-    background: #e5ae56;
-    color: white;
-    font-size: 11px;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-.howto-section {
-    margin-bottom: 50px;
-}
-
-.howto-list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 13px;
-    margin-top: 17px;
-}
-
-.howto-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 11px;
-    padding: 17px 13px;
-    border: 1px solid var(--line);
-    border-radius: 13px;
-    background: #fffefa;
-}
-
-.howto-icon {
-    font-size: 24px;
-}
-
-.howto-item h3 {
-    margin: 0 0 6px;
-    font-size: 12px;
-}
-
-.howto-item p {
-    margin: 0;
+.spot-card p {
+    min-height: 45px;
     color: var(--muted);
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.7;
 }
 
-.site-footer {
-    padding: 23px 15px;
-    background: #e9eddf;
-    text-align: center;
-}
-
-.site-footer p {
-    margin: 0 0 5px;
-    font-family: "Kiwi Maru", sans-serif;
+.spot-status {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #E9E2D1;
+    border-radius: 30px;
     font-size: 12px;
+    font-weight: 800;
 }
 
-.site-footer small {
-    color: #879084;
-    font-size: 10px;
+.spot-card.current .spot-status {
+    background: var(--green-light);
+    color: var(--green-dark);
 }
 
-@media (max-width: 720px) {
+.spot-card.cleared .spot-status {
+    background: #F8E6C5;
+    color: #875B27;
+}
+
+.spot-link {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--green);
+    color: white;
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.spot-link:hover {
+    background: var(--green-dark);
+}
+
+.spot-locked {
+    margin-top: 15px;
+    padding: 14px;
+    text-align: center;
+    color: var(--muted);
+    background: #EEE9DD;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+
+/* =================================
+   最終問題
+================================= */
+
+.final-section {
+    padding: 30px;
+    text-align: center;
+    background: #FFF3D7;
+    border: 2px solid var(--gold);
+    border-radius: 22px;
+}
+
+.final-description {
+    color: var(--muted);
+    line-height: 1.8;
+}
+
+.final-letters {
+    margin: 25px auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.final-letter {
+    width: 58px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 30px;
+    color: var(--green-dark);
+}
+
+.answer-form {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+}
+
+.answer-form label {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.answer-form input {
+    width: 100%;
+    min-height: 58px;
+    padding: 12px 16px;
+
+    background: white;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+
+    font-size: 18px;
+}
+
+.answer-form input:focus {
+    outline: 3px solid #D7E5D0;
+    border-color: var(--green);
+}
+
+.answer-form button {
+    width: 100%;
+}
+
+.answer-message {
+    min-height: 25px;
+    font-weight: 800;
+}
+
+.destination {
+    margin: 25px auto 0;
+    padding: 25px;
+    background: white;
+    border-radius: 18px;
+}
+
+.destination-label {
+    color: var(--orange);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.destination h3 {
+    color: var(--green);
+    font-size: 28px;
+}
+
+.destination-name {
+    margin: 15px 0;
+    color: var(--green-dark);
+    font-family: "Kiwi Maru", sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+}
+
+
+/* =================================
+   遊び方
+================================= */
+
+.howto-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.howto-card {
+    padding: 20px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+}
+
+.howto-card span {
+    color: var(--orange);
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.howto-card h3 {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.howto-card p {
+    margin-bottom: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+
+/* =================================
+   フッター
+================================= */
+
+.site-footer {
+    padding: 25px;
+    background: var(--green-dark);
+    color: #F3EDDB;
+    text-align: center;
+    font-size: 13px;
+}
+
+
+/* =================================
+   タッチ端末
+================================= */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .primary-button,
+    .spot-link {
+        touch-action: manipulation;
+    }
+}
+
+
+/* =================================
+   小さな画面用
+   開発中のPC確認にも対応
+================================= */
+
+@media (max-width: 900px) {
+    main {
+        width: 94%;
+    }
+
     .hero {
-        min-height: 300px;
-    }
-
-    .hero-content {
-        width: 70%;
-        padding: 32px 0 30px 25px;
-    }
-
-    .hero-illustration {
-        left: 45%;
-    }
-
-    .hero-character {
-        right: 15%;
-        bottom: 38px;
+        padding: 28px;
     }
 
     .spot-list {
-        grid-template-columns: 1fr;
-        gap: 13px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .spot-card {
-        display: grid;
-        grid-template-columns: 115px minmax(0, 1fr);
+    .spot-card,
+    .spot-card:nth-child(4),
+    .spot-card:nth-child(5) {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-header {
+        height: 64px;
     }
 
-    .spot-visual {
-        height: 100%;
-        min-height: 180px;
+    .logo {
+        font-size: 18px;
     }
 
-    .spot-emoji {
-        font-size: 48px;
+    .header-label {
+        font-size: 10px;
     }
 
-    .spot-content {
-        padding: 14px;
+    main {
+        margin-top: 18px;
     }
 
-    .spot-content h3 {
-        font-size: 15px;
-    }
-
-    .spot-content p {
+    .hero {
         min-height: auto;
-        margin-bottom: 12px;
+        padding: 25px;
     }
 
+    .hero h1 {
+        font-size: 27px;
+    }
+
+    .hero-character {
+        font-size: 65px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .section-heading h2 {
+        font-size: 20px;
+    }
+
+    .stamp-list {
+        gap: 7px;
+    }
+
+    .stamp-card {
+        min-height: 80px;
+    }
+
+    .stamp-letter {
+        font-size: 25px;
+    }
+
+    .spot-list,
     .howto-list {
         grid-template-columns: 1fr;
     }
 
-    .howto-item {
-        align-items: center;
-    }
-}
-
-@media (max-width: 430px) {
-    main {
-        width: calc(100% - 24px);
-    }
-
-    .site-header {
-        height: 60px;
-        padding: 0 13px;
-    }
-
-    .logo {
-        font-size: 15px;
-    }
-
-    .header-stamp {
-        padding: 8px 10px;
-        font-size: 11px;
-    }
-
-    .hero {
-        min-height: 280px;
-        margin-top: 15px;
-        border-radius: 18px;
-    }
-
-    .hero-content {
-        width: 78%;
-        padding: 27px 0 25px 18px;
-    }
-
-    .hero h1 {
-        font-size: 25px;
-    }
-
-    .hero-description {
-        font-size: 11px;
-    }
-
-    .hero-illustration {
-        left: 42%;
-    }
-
-    .hero-character {
-        right: 6%;
-        bottom: 35px;
-        font-size: 65px;
-    }
-
-    .sun {
-        right: 13px;
-        width: 48px;
-        height: 48px;
-    }
-
-    .section-heading h2,
-    .howto-section h2 {
-        font-size: 18px;
-    }
-
-    .progress-section,
-    .spots-section,
-    .howto-section {
-        margin-top: 32px;
-    }
-
-    .spot-card {
-        grid-template-columns: 95px minmax(0, 1fr);
-    }
-
-    .spot-visual {
-        min-height: 190px;
-    }
-
-    .spot-content {
-        padding: 12px 10px;
-    }
-
-    .spot-content h3 {
-        font-size: 14px;
-    }
-
-    .spot-content p {
-        font-size: 10px;
-    }
-
-    .status-badge {
-        padding: 4px 7px;
-        font-size: 9px;
-    }
-
-    .stamp-banner {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 17px;
-    }
-
-    .stamp-banner-text {
-        min-width: 65%;
-    }
-
-    .stamp-banner-button {
-        width: 100%;
-        text-align: center;
-    }
-
-    .complete-home-message {
-
-        padding: 14px 15px;
-
-        gap: 10px;
-    }
-
-
-    .complete-home-icon {
-
-        width: 42px;
-
-        height: 42px;
-
-        font-size: 23px;
-    }
-
-
-    .complete-home-message h3 {
-
-        font-size: 15px;
-    }
-
-
-    .complete-home-message p {
-
-        font-size: 10px;
+    .final-section {
+        padding: 20px;
     }
 }

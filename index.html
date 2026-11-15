@@ -1,70 +1,84 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ふしぎ発見！ARスタンプラリー</title>
+    <meta name="theme-color" content="#45694d">
+
+    <title>ふしぎ発見！AR宝さがし</title>
+
     <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="app.js" defer></script>
 </head>
 
 <body>
+
     <header class="site-header">
         <a href="index.html" class="logo">
-            <span class="logo-icon">🔍</span>
-            <span>ふしぎ発見！</span>
+            🔍 ふしぎ発見！
         </a>
 
-        <a href="stamp.html" class="header-stamp">
-            <span>🎖️</span>
-            スタンプカード
-        </a>
+        <span class="header-label">
+            AR TREASURE HUNT
+        </span>
     </header>
 
     <main>
+
         <!-- メインビジュアル -->
         <section class="hero">
+
             <div class="hero-content">
-                <p class="hero-label">AR MYSTERY STAMP RALLY</p>
+                <p class="hero-label">WELCOME TO ADVENTURE!</p>
+
                 <h1>
-                    まちのふしぎを<br>
-                    <span>見つけに行こう！</span>
+                    5つの文字を集めて<br>
+                    最後の宝物を見つけよう！
                 </h1>
+
                 <p class="hero-description">
-                    カメラをかざして、謎を解こう！<br>
-                    3つのスポットをめぐってスタンプを集めよう。
+                    まちにかくされたふしぎを発見しよう。
+                    クイズに正解すると、ひらがなのスタンプがもらえるよ！
                 </p>
 
-                <a href="#spots" class="hero-button">
-                    冒険をはじめる
-                    <span>↓</span>
+                <a href="#adventure" class="primary-button">
+                    冒険をはじめる ↓
                 </a>
             </div>
 
-            <div class="hero-illustration" aria-hidden="true">
-                <div class="sun"></div>
-                <div class="cloud cloud-one"></div>
-                <div class="cloud cloud-two"></div>
-                <div class="hill hill-back"></div>
-                <div class="hill hill-front"></div>
-                <div class="hero-character">🐿️</div>
-                <div class="sparkle sparkle-one">✦</div>
-                <div class="sparkle sparkle-two">✧</div>
-                <div class="sparkle sparkle-three">✦</div>
-            </div>
         </section>
 
+
         <!-- 進捗 -->
-        <section class="progress-section" aria-labelledby="progress-title">
+        <section class="progress-section" id="adventure">
+
             <div class="section-heading">
                 <div>
-                    <p class="section-label">YOUR PROGRESS</p>
-                    <h2 id="progress-title">冒険の記録</h2>
+                    <p class="eyebrow">YOUR ADVENTURE</p>
+                    <h2>探検の進みぐあい</h2>
                 </div>
-                <span class="progress-count" id="progressCount">0 / 3</span>
+
+                <p class="progress-count" id="progressCount">
+                    0 / 5
+                </p>
             </div>
 
-            <div class="progress-track">
+            <div
+                class="progress-track"
+                role="progressbar"
+                aria-label="探検の進捗"
+                aria-valuemin="0"
+                aria-valuemax="5"
+                aria-valuenow="0"
+                id="progressBar"
+            >
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
@@ -72,176 +86,142 @@
                 さあ、最初の謎に挑戦しよう！
             </p>
 
-            <!-- コンプリート時だけ表示 -->
-            <div id="completeHomeMessage" class="complete-home-message">
-
-                <div class="complete-home-icon">
-                    🎉
-                </div>
-
-                <div>
-                    <h3>スタンプコンプリート！</h3>
-
-                    <p>
-                        3つのふしぎを全部見つけたよ！<br>
-                        先生にスタンプカードを見せに行こう！
-                    </p>
-                </div>
-
-            </div>
         </section>
 
-        <!-- スポット一覧 -->
-        <section class="spots-section" id="spots">
+
+        <!-- スタンプ -->
+        <section class="stamp-section">
+
             <div class="section-heading">
                 <div>
-                    <p class="section-label">MYSTERY SPOTS</p>
-                    <h2>冒険する場所を選ぼう</h2>
+                    <p class="eyebrow">YOUR STAMPS</p>
+                    <h2>集めた文字</h2>
                 </div>
+
+                <span class="stamp-caption">
+                    5つ集めると最後の謎が出現！
+                </span>
             </div>
 
-            <div class="spot-list">
-                <!-- 神社 -->
-                <article class="spot-card" data-spot="shrine">
-                    <div class="spot-visual shrine-visual">
-                        <span class="spot-number">01</span>
-                        <span class="spot-emoji">⛩️</span>
-                        <span class="visual-decoration">✦</span>
-                    </div>
-
-                    <div class="spot-content">
-                        <div class="spot-topline">
-                            <span class="spot-category">SPOT 01</span>
-                            <span class="status-badge" id="status-shrine">
-                                未クリア
-                            </span>
-                        </div>
-
-                        <h3>神社のふしぎ</h3>
-                        <p>
-                            神社にかくされた謎を解き明かそう！
-                            不思議な出来事が待っているかも？
-                        </p>
-
-                        <a href="ar.html?spot=shrine" class="spot-button">
-                            <span class="button-text">冒険に出発！</span>
-                            <span class="button-arrow">→</span>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- 公園 -->
-                <article class="spot-card" data-spot="park">
-                    <div class="spot-visual park-visual">
-                        <span class="spot-number">02</span>
-                        <span class="spot-emoji">🌳</span>
-                        <span class="visual-decoration">✿</span>
-                    </div>
-
-                    <div class="spot-content">
-                        <div class="spot-topline">
-                            <span class="spot-category">SPOT 02</span>
-                            <span class="status-badge" id="status-park">
-                                未クリア
-                            </span>
-                        </div>
-
-                        <h3>公園のふしぎ</h3>
-                        <p>
-                            公園に眠る秘密を探そう！
-                            目をこらすと何かが見えるかも。
-                        </p>
-
-                        <a href="ar2.html?spot=park" class="spot-button">
-                            <span class="button-text">冒険に出発！</span>
-                            <span class="button-arrow">→</span>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- 図書館 -->
-                <article class="spot-card" data-spot="library">
-                    <div class="spot-visual library-visual">
-                        <span class="spot-number">03</span>
-                        <span class="spot-emoji">📚</span>
-                        <span class="visual-decoration">✧</span>
-                    </div>
-
-                    <div class="spot-content">
-                        <div class="spot-topline">
-                            <span class="spot-category">SPOT 03</span>
-                            <span class="status-badge" id="status-library">
-                                未クリア
-                            </span>
-                        </div>
-
-                        <h3>図書館のふしぎ</h3>
-                        <p>
-                            本の中にひそむ謎に挑戦！
-                            知恵を使って答えを見つけよう。
-                        </p>
-
-                        <a href="ar3.html?spot=library" class="spot-button">
-                            <span class="button-text">冒険に出発！</span>
-                            <span class="button-arrow">→</span>
-                        </a>
-                    </div>
-                </article>
+            <div class="stamp-list" id="stampList">
+                <!-- JavaScriptで表示 -->
             </div>
+
         </section>
 
-        <!-- スタンプカードへの案内 -->
-        <section class="stamp-banner">
-            <div class="stamp-banner-icon">🎖️</div>
-            <div class="stamp-banner-text">
-                <h2>集めたスタンプを見てみよう！</h2>
-                <p>冒険の記録はスタンプカードに残るよ。</p>
+
+        <!-- 探検ルート -->
+        <section class="spots-section">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">TREASURE MAP</p>
+                    <h2>探検スポット</h2>
+                </div>
+
+                <p class="route-label" id="routeLabel">
+                    ルート A
+                </p>
             </div>
-            <a href="stamp.html" class="stamp-banner-button">
-                カードを見る →
-            </a>
+
+            <p class="section-description">
+                クイズに正解すると、次の場所がわかるよ！
+            </p>
+
+            <div class="spot-list" id="spotList">
+                <!-- JavaScriptで表示 -->
+            </div>
+
         </section>
 
+
+        <!-- 最終問題 -->
+        <section class="final-section" id="finalSection" hidden>
+
+            <p class="eyebrow">THE FINAL MYSTERY</p>
+
+            <h2>最後の謎に挑戦！</h2>
+
+            <p class="final-description">
+                5つの場所で集めた文字を並べ替えて、
+                ひとつの言葉を完成させよう！
+            </p>
+
+            <div class="final-letters" id="finalLetters">
+                <!-- JavaScriptで表示 -->
+            </div>
+
+            <form id="answerForm" class="answer-form">
+
+                <label for="finalAnswer">
+                    答えをひらがな、またはカタカナで入力してね
+                </label>
+
+                <input
+                    type="text"
+                    id="finalAnswer"
+                    placeholder="答えを入力しよう"
+                    autocomplete="off"
+                    required
+                >
+
+                <button type="submit" class="primary-button">
+                    答え合わせ！
+                </button>
+
+            </form>
+
+            <p class="answer-message" id="answerMessage" aria-live="polite"></p>
+
+            <div class="destination" id="destination" hidden>
+                <p class="destination-label">TREASURE FOUND!</p>
+                <h3>🎉 せいかい！</h3>
+                <p>最後の集合場所は……</p>
+                <p class="destination-name" id="destinationName">
+                    体育館
+                </p>
+                <p>みんなで集合しよう！</p>
+            </div>
+
+        </section>
+
+
+        <!-- 遊び方 -->
         <section class="howto-section">
-            <p class="section-label">HOW TO PLAY</p>
-            <h2>遊び方</h2>
+
+            <p class="eyebrow">HOW TO PLAY</p>
+            <h2>冒険の進め方</h2>
 
             <div class="howto-list">
-                <div class="howto-item">
-                    <span class="howto-icon">📍</span>
-                    <div>
-                        <h3>1. スポットへ行こう</h3>
-                        <p>好きな場所を選んで、現地へ向かおう。</p>
-                    </div>
-                </div>
 
-                <div class="howto-item">
-                    <span class="howto-icon">📷</span>
-                    <div>
-                        <h3>2. カメラでARを読み取ろう</h3>
-                        <p>マーカーにカメラを向けて、謎解きを始めよう。</p>
-                    </div>
-                </div>
+                <article class="howto-card">
+                    <span>①</span>
+                    <h3>場所に行こう</h3>
+                    <p>案内された場所へ移動しよう。</p>
+                </article>
 
-                <div class="howto-item">
-                    <span class="howto-icon">🏆</span>
-                    <div>
-                        <h3>3. クリアしてスタンプゲット！</h3>
-                        <p>謎を解くとスタンプが押されるよ。</p>
-                    </div>
-                </div>
+                <article class="howto-card">
+                    <span>②</span>
+                    <h3>ARクイズに挑戦</h3>
+                    <p>カメラでふしぎを発見して、クイズに答えよう。</p>
+                </article>
+
+                <article class="howto-card">
+                    <span>③</span>
+                    <h3>文字を集めよう</h3>
+                    <p>正解するとスタンプと文字がもらえるよ。</p>
+                </article>
+
             </div>
+
         </section>
+
     </main>
 
+
     <footer class="site-footer">
-        <p>ふしぎ発見！ARスタンプラリー</p>
-        <small>冒険の記録を大切にしよう。</small>
+        <p>ふしぎ発見！AR宝さがし</p>
     </footer>
 
-    <script src="app.js"></script>
-    <script src="main.js"></script>
-
 </body>
-
 </html>

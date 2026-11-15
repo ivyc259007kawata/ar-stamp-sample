@@ -394,14 +394,14 @@
              * すでにクリア済みなら
              * クイズをもう一度やらなくてもよい
              */
-            if (StampApp.isCleared("park")) {
+            if (StampApp.isCleared("spot2")) {
 
                 startScreen.style.display = "none";
 
                 clearScreen.style.display = "flex";
 
                 setTimeout(() => {
-                    location.href = "stamp.html?spot=park";
+                    location.href = `index.html?route=${StampApp.getRoute()}`;
                 }, 1500);
 
                 return;
@@ -500,7 +500,7 @@
              * park = 今回の2つ目のスポット
              */
             const completed =
-                StampApp.completeSpot("park");
+                StampApp.completeSpot("spot2");
 
 
             console.log(
@@ -525,12 +525,9 @@
              * 1.5秒後にスタンプカードへ
              */
             setTimeout(() => {
-
                 location.href =
-                    "stamp.html?spot=park";
-
+                    `index.html?route=${StampApp.getRoute()}`;
             }, 1500);
-
         });
 
     </script>

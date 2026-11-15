@@ -5,10 +5,9 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-    <title>スポット7 マーカーAR 3にんの ならびかえ</title>
+    <title>スポット3 マーカーAR 3にんの ならびかえ</title>
 
 
     <!-- =============================
@@ -26,7 +25,6 @@
 
 
     <style>
-
         * {
             margin: 0;
             padding: 0;
@@ -122,10 +120,8 @@
                 max(26px, env(safe-area-inset-bottom));
 
             background:
-                linear-gradient(
-                    transparent,
-                    rgba(0, 0, 0, 0.65)
-                );
+                linear-gradient(transparent,
+                    rgba(0, 0, 0, 0.65));
 
             color: #fff;
 
@@ -143,8 +139,7 @@
                 rgba(0, 0, 0, 0.4);
 
             border:
-                2px solid
-                rgba(255, 255, 255, 0.6);
+                2px solid rgba(255, 255, 255, 0.6);
 
             border-radius: 24px;
 
@@ -179,10 +174,8 @@
                 max(14px, env(safe-area-inset-top));
 
             background:
-                linear-gradient(
-                    rgba(0, 0, 0, 0.6),
-                    transparent
-                );
+                linear-gradient(rgba(0, 0, 0, 0.6),
+                    transparent);
 
             color: #fff;
 
@@ -271,8 +264,7 @@
             line-height: 1.8;
 
             box-shadow:
-                0 6px 20px
-                rgba(0, 0, 0, 0.3);
+                0 6px 20px rgba(0, 0, 0, 0.3);
 
             backdrop-filter: blur(4px);
 
@@ -315,8 +307,7 @@
             max-height: 130px;
 
             border:
-                3px dashed
-                rgba(255, 255, 255, 0.8);
+                3px dashed rgba(255, 255, 255, 0.8);
 
             border-radius: 16px;
 
@@ -343,8 +334,7 @@
             font-weight: 700;
 
             text-shadow:
-                0 1px 3px
-                rgba(0, 0, 0, 0.8);
+                0 1px 3px rgba(0, 0, 0, 0.8);
         }
 
 
@@ -376,8 +366,7 @@
             justify-content: center;
 
             box-shadow:
-                0 6px 16px
-                rgba(0, 0, 0, 0.35);
+                0 6px 16px rgba(0, 0, 0, 0.35);
 
             touch-action: none;
 
@@ -402,8 +391,7 @@
 
             box-shadow:
                 0 0 0 4px #3fbf7f,
-                0 6px 16px
-                rgba(0, 0, 0, 0.35);
+                0 6px 16px rgba(0, 0, 0, 0.35);
         }
 
 
@@ -441,8 +429,7 @@
             font-weight: 800;
 
             box-shadow:
-                0 6px 18px
-                rgba(0, 0, 0, 0.3);
+                0 6px 18px rgba(0, 0, 0, 0.3);
 
             pointer-events: auto;
         }
@@ -484,8 +471,7 @@
                 rgba(0, 0, 0, 0.5);
 
             border:
-                2px solid
-                rgba(255, 255, 255, 0.6);
+                2px solid rgba(255, 255, 255, 0.6);
 
             border-radius: 24px;
 
@@ -567,12 +553,10 @@
             margin-bottom: 22px;
 
             animation:
-                pop 0.5s
-                cubic-bezier(.34, 1.56, .64, 1);
+                pop 0.5s cubic-bezier(.34, 1.56, .64, 1);
 
             box-shadow:
-                0 8px 24px
-                rgba(0, 0, 0, 0.3);
+                0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
 
@@ -624,7 +608,6 @@
                 opacity: 1;
             }
         }
-
     </style>
 
 </head>
@@ -644,7 +627,7 @@
         </h1>
 
         <p>
-            スポット7・庄内神楽
+            スポット3・庄内神楽
         </p>
 
     </div>
@@ -667,31 +650,21 @@
          AR
     ============================== -->
 
-    <a-scene
-        mindar-image="
+    <a-scene mindar-image="
             imageTargetSrc: ./kagura.mind;
             autoStart: true;
             uiScanning: no;
-        "
-        color-space="sRGB"
-        renderer="
+        " color-space="sRGB" renderer="
             colorManagement: true,
             physicallyCorrectLights,
             alpha: true
-        "
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-    >
+        " vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
 
-        <a-camera
-            position="0 0 0"
-            look-controls="enabled: false">
+        <a-camera position="0 0 0" look-controls="enabled: false">
         </a-camera>
 
 
-        <a-entity
-            id="target"
-            mindar-image-target="targetIndex: 0">
+        <a-entity id="target" mindar-image-target="targetIndex: 0">
         </a-entity>
 
     </a-scene>
@@ -1259,7 +1232,7 @@
                         c =>
                             c !== card &&
                             c.dataset.slot ===
-                                nearest.id
+                            nearest.id
                     );
 
 
@@ -1430,10 +1403,7 @@
                                図書館スタンプを保存
                             ============================== */
 
-                            StampApp.completeSpot(
-                                "library"
-                            );
-
+                            StampApp.completeSpot("spot3");
 
                             /* =============================
                                スタンプカードへ移動
@@ -1443,7 +1413,7 @@
                                 () => {
 
                                     location.href =
-                                        "stamp.html?spot=library";
+                                        `index.html?route=${StampApp.getRoute()}`;
 
                                 },
                                 2000
@@ -1486,9 +1456,7 @@
                 ============================== */
 
                 if (
-                    StampApp.isCleared(
-                        "library"
-                    )
+                    StampApp.isCleared("spot3")
                 ) {
 
                     console.log(
@@ -1510,9 +1478,10 @@
                         () => {
 
                             location.href =
-                                "stamp.html?spot=library";
+                                `index.html?route=${StampApp.getRoute()}`;
 
                         },
+
                         1500
                     );
 

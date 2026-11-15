@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>スポット6 つかはらおんせんの ミッション</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: "UD Digi Kyokasho NP-R", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+    }
+
+    #camera {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      display: none;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      touch-action: none;
+      display: none;
+    }
+
+    #ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      padding: 14px 18px;
+      padding-top: max(14px, env(safe-area-inset-top));
+      background: linear-gradient(rgba(0, 0, 0, 0.6), transparent);
+      color: #fff;
+      pointer-events: none;
+      display: none;
+    }
+
+    #ui h1 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    #ui p {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      padding: 22px;
+      padding-bottom: max(26px, env(safe-area-inset-bottom));
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+      color: #fff;
+      text-align: center;
+      pointer-events: none;
+      display: none;
+    }
+
+    #hint .badge {
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.45);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 24px;
+      padding: 10px 22px;
+      font-size: 15px;
+      font-weight: 600;
+      backdrop-filter: blur(6px);
+    }
+
+    #testStrip {
+      position: fixed;
+      z-index: 15;
+      width: 60px;
+      height: 90px;
+      background: #f4f0e0;
+      border: 3px solid #ccc4a0;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      touch-action: none;
+      display: none;
+    }
+
+    #testStrip .stripColor {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      right: 6px;
+      height: 36px;
+      background: #fff;
+      border-radius: 3px;
+      transition: background 0.4s;
+    }
+
+    #questionBox {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 11;
+      width: 90%;
+      max-width: 380px;
+      display: none;
+      background: rgba(255, 255, 255, 0.95);
+      color: #3a1a10;
+      border-radius: 18px;
+      padding: 16px 18px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.7;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #choices {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 12;
+      padding: 18px;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      display: none;
+      gap: 12px;
+      flex-direction: column;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.75) 30%);
+    }
+
+    #choices.show {
+      display: flex;
+    }
+
+    .choiceBtn {
+      background: #fff;
+      color: #5a2a1a;
+      border: 3px solid #fff;
+      border-radius: 20px;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .choiceBtn.wrong {
+      background: #ffd9d9;
+      border-color: #ff8a8a;
+    }
+
+    .choiceBtn.correct {
+      background: #d6f5e0;
+      border-color: #3fbf7f;
+    }
+
+    #startScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, #8fbf6a, #4a8f3a);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      padding: 26px;
+    }
+
+    #startScreen .num {
+      background: #fff;
+      color: #4a8f3a;
+      font-weight: 800;
+      font-size: 15px;
+      border-radius: 20px;
+      padding: 5px 18px;
+      margin-bottom: 14px;
+    }
+
+    #startScreen .icon {
+      font-size: 64px;
+      margin-bottom: 14px;
+    }
+
+    #startScreen h2 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+
+    #startScreen p {
+      font-size: 15px;
+      opacity: 0.95;
+      line-height: 1.85;
+      max-width: 310px;
+      margin-bottom: 28px;
+    }
+
+    #startBtn {
+      background: #fff;
+      color: #4a8f3a;
+      border: none;
+      border-radius: 32px;
+      padding: 18px 44px;
+      font-size: 18px;
+      font-weight: 800;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    #errBox {
+      display: none;
+      margin-top: 18px;
+      font-size: 13px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px 16px;
+      border-radius: 14px;
+      max-width: 290px;
+      line-height: 1.7;
+    }
+
+    #loadingBox {
+      display: none;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    #clearScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, #2b8a5f, #1c5e3f);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      padding: 26px;
+    }
+
+    #clearScreen.show {
+      display: flex;
+      animation: fadeIn 0.5s ease;
+    }
+
+    #clearScreen .stamp {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      margin-bottom: 22px;
+      animation: pop 0.5s cubic-bezier(.34, 1.56, .64, 1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    #clearScreen h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+
+    #clearScreen p {
+      font-size: 15px;
+      opacity: 0.95;
+      max-width: 290px;
+      line-height: 1.9;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0);
+      }
+
+      80% {
+        transform: scale(1.15);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+  <script src="app.js"></script>
+</head>
+
+<body>
+
+  <div id="startScreen">
+    <div class="num">スポット 6 / 9</div>
+    <div class="icon">🧪</div>
+    <h2>つかはらおんせんの ふしぎ</h2>
+    <p>しゃしんを とって、しけんしを<br>おんせんに ゆびで うごかして いれてみよう!</p>
+    <button id="startBtn">しゃしんを とる</button>
+    <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;">
+    <div id="errBox"></div>
+    <div id="loadingBox">よみこみちゅう…</div>
+  </div>
+
+  <img id="camera" alt="とったしゃしん">
+  <canvas id="overlay"></canvas>
+
+  <div id="ui">
+    <h1>由布市ARスタンプラリー</h1>
+    <p>スポット6・つかはらおんせん</p>
+  </div>
+
+  <div id="testStrip">
+    <div class="stripColor" id="stripColor"></div>
+  </div>
+
+  <div id="questionBox">
+    塚原温泉(つかはらおんせん)の水は、<br>
+    口に含むと どんな味が するでしょう?
+  </div>
+
+  <div id="hint">
+    <div class="badge" id="hintText">しけんしを おんせんの わっかまで うごかそう</div>
+  </div>
+
+  <div id="choices">
+    <button class="choiceBtn" data-val="sweet">あまい</button>
+    <button class="choiceBtn" data-val="sour">すっぱい</button>
+    <button class="choiceBtn" data-val="salty">しょっぱい</button>
+  </div>
+
+  <div id="clearScreen">
+    <div class="stamp">🧪</div>
+    <h2>せいかい!</h2>
+    <p id="clearText"></p>
+  </div>
+
+  <script>
+    const video = document.getElementById('camera');
+    const canvas = document.getElementById('overlay');
+    const ctx = canvas.getContext('2d');
+    const startScreen = document.getElementById('startScreen');
+    const startBtn = document.getElementById('startBtn');
+    const errBox = document.getElementById('errBox');
+    const loadingBox = document.getElementById('loadingBox');
+    const fileInput = document.getElementById('fileInput');
+    const ui = document.getElementById('ui');
+    const hint = document.getElementById('hint');
+    const hintText = document.getElementById('hintText');
+    const testStrip = document.getElementById('testStrip');
+    const stripColor = document.getElementById('stripColor');
+    const questionBox = document.getElementById('questionBox');
+    const choicesBox = document.getElementById('choices');
+    const clearScreen = document.getElementById('clearScreen');
+    const clearText = document.getElementById('clearText');
+
+    let W, H;
+    let poolCenter = { x: 0, y: 0, r: 0 };
+    let dipped = false;
+    let phase = 'drag'; // drag -> quiz -> done
+    let answered = false;
+
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W; canvas.height = H;
+      poolCenter = { x: W * 0.5, y: H * 0.58, r: Math.min(W, H) * 0.24 };
+      if (!dipped) {
+        testStrip.style.left = (W * 0.5 - 30) + 'px';
+        testStrip.style.top = (H * 0.16) + 'px';
+      }
+    }
+    window.addEventListener('resize', resize);
+
+    startBtn.addEventListener('click', () => { fileInput.click(); });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      loadingBox.style.display = 'block';
+      errBox.style.display = 'none';
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        video.onload = () => {
+          loadingBox.style.display = 'none';
+          startScreen.style.display = 'none';
+          video.style.display = 'block';
+          canvas.style.display = 'block';
+          ui.style.display = 'block';
+          hint.style.display = 'block';
+          testStrip.style.display = 'block';
+          resize();
+          requestAnimationFrame(loop);
+        };
+        video.onerror = showLoadError;
+        video.src = ev.target.result;
+      };
+      reader.onerror = showLoadError;
+      reader.readAsDataURL(file);
+    });
+
+    function showLoadError() {
+      loadingBox.style.display = 'none';
+      errBox.style.display = 'block';
+      errBox.textContent = 'しゃしんが よみこめなかったよ。もういちど とってみてね。';
+    }
+
+    // ---- 試験紙のドラッグ操作 ----
+    let dragging = false;
+    let offsetX = 0, offsetY = 0;
+
+    function pointerPos(e) { const t = e.touches ? e.touches[0] : e; return { x: t.clientX, y: t.clientY }; }
+
+    testStrip.addEventListener('touchstart', e => {
+      if (dipped) return;
+      const p = pointerPos(e);
+      const rect = testStrip.getBoundingClientRect();
+      offsetX = p.x - rect.left; offsetY = p.y - rect.top;
+      dragging = true;
+    }, { passive: true });
+
+    testStrip.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const p = pointerPos(e);
+      moveStrip(p.x - offsetX, p.y - offsetY);
+    }, { passive: true });
+
+    testStrip.addEventListener('touchend', () => { dragging = false; checkDip(); });
+
+    testStrip.addEventListener('mousedown', e => {
+      if (dipped) return;
+      const rect = testStrip.getBoundingClientRect();
+      offsetX = e.clientX - rect.left; offsetY = e.clientY - rect.top;
+      dragging = true;
+    });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      moveStrip(e.clientX - offsetX, e.clientY - offsetY);
+    });
+    window.addEventListener('mouseup', () => { dragging = false; checkDip(); });
+
+    function moveStrip(x, y) {
+      testStrip.style.left = x + 'px';
+      testStrip.style.top = y + 'px';
+    }
+
+    function checkDip() {
+      if (dipped) return;
+      const rect = testStrip.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dist = Math.hypot(cx - poolCenter.x, cy - poolCenter.y);
+      if (dist < poolCenter.r) {
+        dipped = true;
+        stripColor.style.background = '#e85c3c'; // 強酸性で赤く変色
+        hintText.textContent = 'しけんしが まっかに なった!すごい さんせいだ!';
+        setTimeout(() => {
+          phase = 'quiz';
+          questionBox.style.display = 'block';
+          setTimeout(() => { choicesBox.classList.add('show'); }, 400);
+        }, 900);
+      }
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, W, H);
+      // 温泉の輪っか（目印）を描画
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(poolCenter.x, poolCenter.y, poolCenter.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(120,220,255,${0.5 + 0.3 * Math.sin(Date.now() / 300)})`;
+      ctx.lineWidth = 5;
+      ctx.setLineDash([10, 10]);
+      ctx.stroke();
+      ctx.restore();
+      requestAnimationFrame(loop);
+    }
+
+    choicesBox.addEventListener('click', (e) => {
+      const btn = e.target.closest('.choiceBtn');
+      if (!btn || answered) return;
+      if (btn.dataset.val === 'sour') {
+        answered = true;
+        btn.classList.add('correct');
+        hintText.textContent = 'せいかい!';
+        setTimeout(() => {
+          phase = 'done';
+
+          clearText.innerHTML =
+            '塚原温泉(つかはらおんせん)は、<br>' +
+            'ｐＨやく1.5という<br>' +
+            'とても つよい さんせいの おんせんだよ。';
+
+          clearScreen.classList.add('show');
+
+          // スポット5のスタンプを保存
+          StampApp.completeSpot("spot5");
+
+          // トップページに戻る
+          setTimeout(() => {
+            location.href = `index.html?route=${StampApp.getRoute()}`;
+          }, 2000);
+
+        }, 700);
+      } else {
+        btn.classList.add('wrong');
+        hintText.textContent = 'ちがうよ、もういちど かんがえてみよう';
+        setTimeout(() => { btn.classList.remove('wrong'); }, 700);
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -425,7 +425,7 @@
                     phase = 'done';
 
                     // 神社スポットをクリアとして保存
-                    StampApp.completeSpot("shrine");
+                    StampApp.completeSpot("spot1");
 
                     clearText.innerHTML =
                         'ぬいた"あと"（あな）は<br>' +
@@ -437,7 +437,7 @@
 
                     // 2.5秒後にスタンプカードへ移動
                     setTimeout(() => {
-                        location.href = "stamp.html?spot=shrine";
+                        location.href = `index.html?route=${StampApp.getRoute()}`;
                     }, 2500);
 
                 }, 700);

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>スポット4 マーカーAR さんかくを よめ</title>
+  <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent !important;
+      font-family: "UD Digi Kyokasho NP-R", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+    }
+
+    a-scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: transparent !important;
+    }
+
+    video {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      z-index: -1 !important;
+    }
+
+    #searchHint {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 20;
+      padding: 22px;
+      padding-bottom: max(26px, env(safe-area-inset-bottom));
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+      color: #fff;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #searchHint .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 24px;
+      padding: 10px 22px;
+      font-size: 16px;
+      font-weight: 600;
+      backdrop-filter: blur(6px);
+    }
+
+    #ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 20;
+      padding: 14px 18px;
+      padding-top: max(14px, env(safe-area-inset-top));
+      background: linear-gradient(rgba(0, 0, 0, 0.6), transparent);
+      color: #fff;
+      pointer-events: none;
+    }
+
+    #ui h1 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    #ui p {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    #gameLayer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 30;
+      display: none;
+      touch-action: none;
+    }
+
+    #shapeCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #answerBox {
+      position: fixed;
+      top: 66px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 31;
+      display: none;
+      gap: 10px;
+    }
+
+    #answerBox .slot {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #7a4a10;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #answerBox .slot.filled {
+      background: #ffe08a;
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 31;
+      padding: 22px;
+      padding-bottom: max(26px, env(safe-area-inset-bottom));
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+      color: #fff;
+      text-align: center;
+      pointer-events: none;
+      display: none;
+    }
+
+    #hint .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      border-radius: 24px;
+      padding: 10px 22px;
+      font-size: 15px;
+      font-weight: 600;
+      backdrop-filter: blur(6px);
+    }
+
+    #clearScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, #2b8a5f, #1c5e3f);
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      padding: 26px;
+    }
+
+    #clearScreen.show {
+      display: flex;
+      animation: fadeIn 0.5s ease;
+    }
+
+    #clearScreen .stamp {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      margin-bottom: 22px;
+      animation: pop 0.5s cubic-bezier(.34, 1.56, .64, 1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    #clearScreen h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+
+    #clearScreen p {
+      font-size: 15px;
+      opacity: 0.95;
+      max-width: 290px;
+      line-height: 1.9;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0);
+      }
+
+      80% {
+        transform: scale(1.15);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="ui">
+    <h1>由布市ARスタンプラリー</h1>
+    <p>スポット4・かんさつ</p>
+  </div>
+
+  <div id="searchHint">
+    <div class="badge">印刷したマーカーに カメラを むけてね</div>
+  </div>
+
+  <a-scene mindar-image="imageTargetSrc: ./yufushi.mind; autoStart: true; uiScanning: no;" color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights, alpha: true" vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-entity id="target" mindar-image-target="targetIndex: 0"></a-entity>
+  </a-scene>
+
+  <div id="gameLayer">
+    <canvas id="shapeCanvas"></canvas>
+  </div>
+
+  <div id="answerBox">
+    <div class="slot" id="slot0"></div>
+    <div class="slot" id="slot1"></div>
+    <div class="slot" id="slot2"></div>
+  </div>
+
+  <div id="hint">
+    <div class="badge" id="hintText">ゆふ岳の やまがたを さがそう(やまが 2つ あるよ)</div>
+  </div>
+
+  <div id="clearScreen">
+    <div class="stamp">🏞️</div>
+    <h2>「ゆふし」が あらわれた!</h2>
+    <p id="clearText"></p>
+  </div>
+
+  <script>
+    const targetEntity = document.getElementById('target');
+    const searchHint = document.getElementById('searchHint');
+    const gameLayer = document.getElementById('gameLayer');
+    const canvas = document.getElementById('shapeCanvas');
+    const ctx = canvas.getContext('2d');
+    const answerBox = document.getElementById('answerBox');
+    const hint = document.getElementById('hint');
+    const hintText = document.getElementById('hintText');
+    const clearScreen = document.getElementById('clearScreen');
+    const clearText = document.getElementById('clearText');
+
+    let W, H;
+    let shapes = [];
+    let collectedCount = 0;
+    let cleared = false;
+    let gameStarted = false;
+    let loopRunning = false;
+
+    const TARGET_WORD = ['ゆ', 'ふ', 'し'];
+    const DECOY_CHARS = ['か', 'ま', 'た', 'こ', 'ら', 'ぬ', 'せ', 'み', 'わ', 'え', 'ろ', 'ひ'];
+
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W; canvas.height = H;
+      layoutShapes();
+    }
+    window.addEventListener('resize', resize);
+
+    function layoutShapes() {
+      shapes = [];
+      const types = ['triangle', 'circle', 'square'];
+      const size = Math.min(W, H) * 0.075;
+      const top = H * 0.24, bottom = H * 0.82;
+      const left = W * 0.12, right = W * 0.88;
+
+      const cols = 4, rows = 4;
+      const cellW = (right - left) / cols, cellH = (bottom - top) / rows;
+      const positions = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          positions.push({
+            x: left + cellW * c + cellW / 2 + (Math.random() - 0.5) * cellW * 0.4,
+            y: top + cellH * r + cellH / 2 + (Math.random() - 0.5) * cellH * 0.4
+          });
+        }
+      }
+      for (let i = positions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [positions[i], positions[j]] = [positions[j], positions[i]];
+      }
+
+      const usedPositions = positions.slice(0, 12);
+
+      // 正解の3つは「由布岳(双耳峰)」の形にする（決めの図形なので見た目で区別できる）
+      for (let i = 0; i < 3; i++) {
+        const pos = usedPositions.pop();
+        shapes.push({
+          type: 'yufudake', x: pos.x, y: pos.y, size,
+          char: TARGET_WORD[i], isTarget: true, targetIndex: i, collected: false
+        });
+      }
+      usedPositions.forEach(pos => {
+        const type = types[Math.floor(Math.random() * types.length)];
+        const char = DECOY_CHARS[Math.floor(Math.random() * DECOY_CHARS.length)];
+        shapes.push({ type, x: pos.x, y: pos.y, size, char, isTarget: false, collected: false });
+      });
+    }
+
+    function pointerPos(e) { const t = e.touches ? e.touches[0] : e; return { x: t.clientX, y: t.clientY }; }
+
+    function handleTap(x, y) {
+      if (cleared) return;
+      for (const s of shapes) {
+        if (s.collected) continue;
+        const dist = Math.hypot(x - s.x, y - s.y);
+        if (dist < s.size * 1.5) {
+          if (s.isTarget) {
+            s.collected = true;
+            collectedCount++;
+            const slot = document.getElementById('slot' + s.targetIndex);
+            slot.textContent = s.char;
+            slot.classList.add('filled');
+            hintText.textContent = '「' + s.char + '」を みつけた!';
+            if (collectedCount >= 3) {
+              cleared = true;
+
+              setTimeout(() => {
+                clearText.innerHTML =
+                  '由布市(ゆふし)は 大分県に ある まちだよ。<br>' +
+                  '温泉や 由布岳、金鱗湖など、<br>' +
+                  'しぜんが ゆたかな ところなんだ。';
+
+                clearScreen.classList.add('show');
+
+                // スポット4のスタンプを保存
+                StampApp.completeSpot("spot4");
+
+                // トップページに戻る
+                setTimeout(() => {
+                  location.href = `index.html?route=${StampApp.getRoute()}`;
+                }, 2000);
+
+              }, 700);
+            }
+          } else if (s.type === 'triangle' && !s.isTarget) {
+            s.flash = 20;
+            hintText.textContent = 'それは やまが 1つの かたちだね。2つの やまを さがそう';
+          } else {
+            s.flash = 12;
+            hintText.textContent = 'それは やまの かたちじゃ なさそう';
+          }
+          return;
+        }
+      }
+    }
+
+    canvas.addEventListener('touchstart', e => { const p = pointerPos(e); handleTap(p.x, p.y); }, { passive: true });
+    canvas.addEventListener('mousedown', e => { handleTap(e.clientX, e.clientY); });
+
+    function drawShape(s) {
+      ctx.save();
+      ctx.translate(s.x, s.y);
+
+      let fillColor = 'rgba(255,255,255,0.85)';
+      if (s.collected) fillColor = '#ffe08a';
+      if (s.flash && s.flash > 0) { fillColor = 'rgba(255,120,120,0.85)'; s.flash--; }
+
+      ctx.fillStyle = fillColor;
+      ctx.strokeStyle = 'rgba(90,60,30,0.9)';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = 'rgba(0,0,0,0.35)';
+      ctx.shadowBlur = 8;
+
+      if (s.isTarget) {
+        // ゆふ岳の双耳峰（山頂が2つ、真ん中がへこんだ形）
+        const sz = s.size;
+        ctx.beginPath();
+        ctx.moveTo(-sz * 0.9, sz * 0.7);
+        ctx.lineTo(-sz * 0.35, -sz);
+        ctx.lineTo(0, -sz * 0.4);
+        ctx.lineTo(sz * 0.35, -sz);
+        ctx.lineTo(sz * 0.9, sz * 0.7);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (s.type === 'triangle') {
+        ctx.beginPath();
+        ctx.moveTo(0, -s.size);
+        ctx.lineTo(s.size * 0.9, s.size * 0.7);
+        ctx.lineTo(-s.size * 0.9, s.size * 0.7);
+        ctx.closePath();
+        ctx.fill();
+      } else if (s.type === 'circle') {
+        ctx.beginPath();
+        ctx.arc(0, 0, s.size, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-s.size * 0.85, -s.size * 0.85, s.size * 1.7, s.size * 1.7);
+      }
+
+      if (!s.collected) {
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#3a2a10';
+        ctx.font = `bold ${s.size * 0.85}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(s.char, 0, s.isTarget ? s.size * 0.35 : (s.type === 'triangle' ? s.size * 0.05 : 0));
+      }
+
+      ctx.restore();
+    }
+
+    function loop() {
+      if (!loopRunning) return;
+      ctx.clearRect(0, 0, W, H);
+      for (const s of shapes) {
+        if (!s.collected) drawShape(s);
+      }
+      requestAnimationFrame(loop);
+    }
+
+    targetEntity.addEventListener('targetFound', () => {
+      searchHint.style.display = 'none';
+      if (!gameStarted) {
+        gameStarted = true;
+        resize();
+        gameLayer.style.display = 'block';
+        answerBox.style.display = 'flex';
+        hint.style.display = 'block';
+        loopRunning = true;
+        requestAnimationFrame(loop);
+      }
+    });
+    targetEntity.addEventListener('targetLost', () => {
+      if (!gameStarted) searchHint.style.display = 'block';
+    });
+  </script>
+</body>
+
+</html>
