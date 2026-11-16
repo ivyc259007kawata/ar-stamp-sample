@@ -120,7 +120,7 @@
 
         #questionBox {
             position: fixed;
-            top: 70px;
+            top: 45px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 31;
@@ -145,7 +145,8 @@
 
         #hint {
             position: fixed;
-            bottom: 0;
+            top: 150px;
+            bottom: auto;
             left: 0;
             width: 100%;
             z-index: 31;
@@ -399,10 +400,19 @@
                     pullCountEl.textContent = `ぬいた数：${pulledCount} / ${PULL_TARGET}`;
                     if (pulledCount >= PULL_TARGET) {
                         phase = 'quiz';
-                        hintText.textContent = 'ぬいたあと(あな)は いくつ かな？';
-                        setTimeout(() => { choicesBox.classList.add('show'); }, 500);
+
+                        // 問題文をクイズに切り替える
+                        questionBox.innerHTML =
+                            'ぬいたあと（あな）は いくつ かな？';
+
+                        // 選択肢を表示する
+                        setTimeout(() => {
+                            choicesBox.classList.add('show');
+                        }, 500);
+
                     } else {
-                        hintText.textContent = 'あと ' + (PULL_TARGET - pulledCount) + '束 ひっぱろう';
+                        hintText.textContent =
+                            'あと ' + (PULL_TARGET - pulledCount) + '束 ひっぱろう';
                     }
                     return;
                 }
